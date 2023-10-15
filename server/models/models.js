@@ -16,13 +16,14 @@ const BasketBooks= sequelize.define('basketBooks', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
 })
 
-const Books= sequelize.define('books', {
+const Books = sequelize.define('books', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique:true, allowNull: false},
     price: {type:DataTypes.INTEGER, allowNull:false},
     rating: {type: DataTypes.INTEGER, defaultsValue:0},
     img:{type:DataTypes.STRING, allowNull:false},
-})
+    description: {type: DataTypes.STRING, allowNull:true},
+  });
 
 const Genre= sequelize.define('genre', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
