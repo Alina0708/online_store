@@ -1,6 +1,7 @@
-const {Books} = require('../models/models')
+const {Books, Genre, AUTORS} = require('../models/models')
 const uuid = require('uuid')
 const path = require('path')
+const { Op } = require('sequelize');
 
 class BooksController {
     async create(req, res) {
@@ -33,9 +34,56 @@ class BooksController {
         return res.json(books)
     }
 
-    async genOn(req, res){
+    async getOneName(req, res){
+        try {
+            const title = req.params.title; 
+            console.log("----------------------" + req.params);
+            const book = await Books.findOne({
+              where: {
+                name: title
+              }
+            });
+        
+            if (book) {
+              res.json(book); // Отправьте найденную книгу в формате JSON в ответе
+            } else {
+              res.status(404).json({ error: 'Книга не найдена' }); // Если книга не найдена, верните статус 404
+            }
+          } catch (error) {
+            console.error('Ошибка при поиске книги:', error);
+            res.status(500).json({ error: 'Внутренняя ошибка сервера' }); // Обработка ошибки сервера
+          }
+     }
 
-    }
+     async getOneAutor(req, res){
+        try {
+            const autor = req.params.autor; // Предполагается, что фамилия автора передается в параметрах маршрута
+        
+            // Найдем автора по фамилии
+            const autors = await AUTORS.findOne({
+              where: { last_name: autor },
+            });
+        
+            if (!autors) {
+              return res.status(404).json({ message: 'Автор не найден' });
+            }
+        
+            // Теперь найдем все книги, связанные с этим автором
+            const books = await Books.findAll({
+              where: { autorId: autors.id },
+            });
+        
+            if (!books || books.length === 0) {
+              return res.status(404).json({ message: 'Книги этого автора не найдены' });
+            }
+        
+            // Отправим список книг в ответ
+            res.status(200).json({ autor: autors, books });
+          } catch (error) {
+            console.error('Ошибка при поиске книг по автору:', error);
+            res.status(500).json({ message: 'Ошибка при поиске книг по автору' });
+          }
+     }
 
 }
 

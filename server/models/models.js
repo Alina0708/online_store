@@ -14,6 +14,7 @@ const Basket= sequelize.define('basket', {
 
 const BasketBooks= sequelize.define('basketBooks', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    count: {type: DataTypes.INTEGER, defaultValue:0},
 })
 
 const Books = sequelize.define('books', {
@@ -40,8 +41,23 @@ const AUTORS= sequelize.define('autors', {
 const Rating= sequelize.define('rating', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     rate: {type: DataTypes.INTEGER, allowNull:false},
+    comment:{type: DataTypes.STRING},
 })
 
+const Status= sequelize.define('status', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING, allowNull:false},
+})
+
+const Order= sequelize.define('order', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    commonPrice: {type: DataTypes.INTEGER, defaultValue: 0},
+})
+
+const OrderBooks= sequelize.define('orderBooks', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    count: {type: DataTypes.INTEGER},
+})
 
 User.hasOne(Basket)
 Basket.belongsTo(User)
@@ -64,8 +80,20 @@ Rating.belongsTo(Books)
 Books.hasMany(BasketBooks)
 BasketBooks.belongsTo(Books)
 
+User.hasMany(Order); 
+Order.belongsTo(User); 
+
+Order.hasMany(OrderBooks); 
+OrderBooks.belongsTo(Order);
+
+Status.hasMany(Order); 
+Order.belongsTo(Status);
+
+Books.hasMany(OrderBooks); 
+OrderBooks.belongsTo(Books);
+
 module.exports = {
-    User, Basket, BasketBooks, Books, Genre, AUTORS, Rating
+    User, Basket, BasketBooks, Books, Genre, AUTORS, Rating, Order, OrderBooks, Status
 }
 
 
