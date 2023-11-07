@@ -37,7 +37,6 @@ class BooksController {
     async getOneName(req, res){
         try {
             const title = req.params.title; 
-            console.log("----------------------" + req.params);
             const book = await Books.findOne({
               where: {
                 name: title
@@ -84,6 +83,42 @@ class BooksController {
             res.status(500).json({ message: 'Ошибка при поиске книг по автору' });
           }
      }
+
+     async getBookOne(req, res) {
+      try {
+        const bookId = req.params.id;
+        const book = await Books.findOne({ 
+          where: { id: bookId },
+          include: [
+            {
+              model: Genre,
+              attributes: ['name']
+             },
+            {
+              model: AUTORS,
+              attributes: ['first_name','last_name']
+            }
+          ]
+        });
+    
+        if (!book) {
+          return res.status(404).json({ message: "Book not found" });
+        }
+    
+        res.status(200).json({
+          name: book.name,
+          price: book.price,
+          rating: book.rating,
+          img: book.img,
+          description: book.description,
+          genre: book.genre.name,
+          author: `${book.autor.first_name} ${book.autor.last_name}`
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Server Error" });
+      }
+    }
 
 }
 

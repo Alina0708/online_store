@@ -15,7 +15,7 @@ const AutorsBar = observer(() => {
             onClick={() => books.setSelectedAutors(autors)}
             key={autors.id}
         >
-            {autors.first_name}
+            {autors.first_name + " "}
             {autors.last_name}
         </ListGroup.Item>
                 )}

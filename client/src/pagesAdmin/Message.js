@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-const Basket = observer(() =>{
+const Message = observer(() =>{
     return(
-        <div>Basket</div>
+        <div>Message</div>
     );
 });
 
-export default Basket;
+export default Message;
