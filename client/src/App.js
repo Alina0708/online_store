@@ -16,6 +16,7 @@ import Order from './pagesAdmin/Orders';
 import { observer } from 'mobx-react-lite';
 import { Spinner } from 'react-bootstrap';
 import {check} from "./http/UserAPI";
+import Contacts from './pages/Contacts';
 
 const App = observer (() =>{
   const { isAuth } = useContext(Context);
@@ -27,12 +28,13 @@ const App = observer (() =>{
       if(data.role === 'admin'){
         isAuth.setIsAdmin(true)
         isAuth.setIsAuth(true)
+        console.log("-------" + data.id)
       }else if(data.role === 'USER'){
         isAuth.setIsAuth(true)
       }
         
     }).finally(() => setLoading(false))
-}, [])
+}, [isAuth])
 
 if (loading) {
     return <Spinner animation={"grow"}/>
@@ -57,6 +59,7 @@ console.log(isAuth)
             <Route path="/shop" element={<Shop />} />
             <Route path="/basket" element={<Basket />} />
             <Route path="/shop/:id" element={<BookPage />} />
+            <Route path="/messageForAdmin" element={<Contacts />} />
           </>
         ) : null}
       </Routes>

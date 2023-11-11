@@ -1,5 +1,4 @@
 const { AUTORS } = require("../models/models");
-const ApiError = require("../error/ApiError");
 
 class AutorController {
   async create(req, res) {

@@ -10,6 +10,12 @@ export const getGenre = async () => {
     const {data} = await $host.get('api/genre')
     return data;
 }
+
+export const getGenreDescription = async (name) => {
+    const {data} = await $host.get(`api/genre/description/${name}`)
+    return data;
+}
+
 //autors
 export const createAutor = async ({first_name, last_name}) => {
     const {data} = await $authHost.post('api/autor', {first_name, last_name})
@@ -22,7 +28,7 @@ export const getAutors = async () => {
 }
 
 export const deleteAutors = async (id) =>{
-    const {data} = await $authHost.post('api/autor', {id})
+    const {data} = await $authHost.post('api/autor/', {id})
     return data  
 }
 
@@ -33,7 +39,7 @@ export const getBooks = async () => {
 }
 
 export const getBookOneId = async (id) => {
-    const {data} = await $host.get('api/books/' + id, )
+    const {data} = await $host.get(`api/books/${id}`, )
     return data
 }
 

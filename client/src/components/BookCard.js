@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 const BookCard = observer(({bookitem}) => {
     const history =  useNavigate();
     return(
-<Col md={3} className='mt-3' onClick={() => {history("/shop/" + bookitem.id)}}>
+<Col md={3} className='mt-3' onClick={() => {history(`/shop/${bookitem.id}`)}}>
     <Card style={{width:150, cursor:'pointer'}} border={"light"}>
     <Image width={200} height={300} src={"http://localhost:5000/" + bookitem.img}/>
        <div>
