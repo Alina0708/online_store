@@ -1,18 +1,24 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import star from "../image/pngwing.com.png";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { getBookOneId, getGenreDescription } from "../http/AutorAPI";
-import {check} from "../http/UserAPI";
+import {
+  getBookOneId,
+  getCommentsBook,
+  getGenreDescription,
+  createComments,
+} from "../http/AutorAPI";
+import { check } from "../http/UserAPI";
 
 const BookPage = () => {
-  const[books, setBooks] = useState({info:[]})
-  const[userId, setUser] = useState();
-  const[descriptionGenre, setDescriptionGenre] = useState("");
-  const {id} = useParams();
-  let comment;
+  const [books, setBooks] = useState({ info: [] });
+  const [userId, setUser] = useState();
+  const [showComments, setShowComment] = useState();
+  let [comment, setCommnet] = useState("");
+  const [descriptionGenre, setDescriptionGenre] = useState("");
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,10 +28,13 @@ const BookPage = () => {
 
         const genreDescription = await getGenreDescription(bookData.genre);
         setDescriptionGenre(genreDescription);
-        
+
         const userData = await check();
         setUser(userData.id);
-        
+
+        const showComment = await getCommentsBook(id);
+        setShowComment(showComment.comments);
+
         console.log("lol", userId, id);
       } catch (error) {
         console.error(error);
@@ -35,12 +44,17 @@ const BookPage = () => {
     fetchData();
   }, [id, userId]);
 
-
-  
-
-  const handleSendComment = () => {
-    if (comment.trim() !== "") {
-      comment = "";
+  const handleSendComment = async () => {
+    try {
+      console.log(comment, userId, id);
+      if (userId && id && comment !== "") {
+        let data = await createComments({ comment, userId, bookId:id });
+        console.log("Comment added successfully");
+        if(data)
+        comment = "";
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -48,21 +62,28 @@ const BookPage = () => {
     <Container className="mt-3">
       <Row>
         <Col md={4}>
-          <Image width={300} height={400} src={"http://localhost:5000/" + books.img} />
+          <Image
+            width={300}
+            height={400}
+            src={"http://localhost:5000/" + books.img}
+          />
           <Row>
-            <div style={{height:20}} className="d-flex align-item-center mt-1">
+            <div
+              style={{ height: 20 }}
+              className="d-flex align-item-center mt-1"
+            >
               <p>{books.rating}</p>
               <Image src={star} width={20} height={20} />
             </div>
           </Row>
         </Col>
         <Col md={5}>
-          <h2 style={{height:20}}>{books.name}</h2>
-          <p  style={{paddingTop:45}}>{books.description}</p>
+          <h2 style={{ height: 20 }}>{books.name}</h2>
+          <p style={{ paddingTop: 45 }}>{books.description}</p>
           <h2>Characteristic</h2>
           <div className="d-flex align-item-center mt-1">
             <p>Autor: {books.author}</p>
-               </div>
+          </div>
           <div className="d-flex align-item-center mt-1">
             <p>Genre: {books.genre} </p>
           </div>
@@ -90,16 +111,46 @@ const BookPage = () => {
             type="text"
             placeholder="Add a comment..."
             value={comment}
-            style={{height:100}}
+            onChange={(e) => setCommnet(e.target.value)}
+            style={{ height: 100 }}
             className="d-block w-100"
           />
-          <Button onClick={handleSendComment} style={{position:"absolute", right: 320, marginTop: 10, width: 200}}>
+          <Button
+            onClick={handleSendComment}
+            style={{
+              position: "absolute",
+              right: 310,
+              marginTop: 10,
+              width: 200,
+            }}
+          >
             Send
           </Button>
         </div>
-        
-      </Row>
 
+        <div style={{ marginTop: 70 }}>
+          {showComments &&
+            showComments.map((data, index) => {
+              return (
+                <ul key={index}>
+                  <li style={{ paddingTop: 20 }} key={`comment-${index}`}>
+                    {data.comment}
+                  </li>
+                  <p
+                    style={{
+                      position: "absolute",
+                      right: 250,
+                      width: 200,
+                    }}
+                    key={`user-${index}`}
+                  >
+                    {data.user.email}
+                  </p>
+                </ul>
+              );
+            })}
+        </div>
+      </Row>
     </Container>
   );
 };

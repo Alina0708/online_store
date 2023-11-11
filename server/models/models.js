@@ -38,9 +38,13 @@ const AUTORS= sequelize.define('autors', {
     last_name:{type: DataTypes.STRING},
 })
 
-const Rating= sequelize.define('rating', {
+const Rating= sequelize.define('ratings', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     rate: {type: DataTypes.INTEGER, allowNull:false},
+})
+
+const Comments = sequelize.define('comments', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     comment:{type: DataTypes.STRING},
 })
 
@@ -65,6 +69,9 @@ Basket.belongsTo(User)
 User.hasMany(Rating)
 Rating.belongsTo(User)
 
+User.hasMany(Comments)
+Comments.belongsTo(User)
+
 Basket.hasMany(BasketBooks)
 BasketBooks.belongsTo(Basket)
 
@@ -76,6 +83,9 @@ Books.belongsTo(AUTORS)
 
 Books.hasMany(Rating)
 Rating.belongsTo(Books)
+
+Books.hasMany(Comments)
+Comments.belongsTo(Books)
 
 Books.hasMany(BasketBooks)
 BasketBooks.belongsTo(Books)
@@ -93,7 +103,7 @@ Books.hasMany(OrderBooks);
 OrderBooks.belongsTo(Books);
 
 module.exports = {
-    User, Basket, BasketBooks, Books, Genre, AUTORS, Rating, Order, OrderBooks, Status
+    User, Basket, BasketBooks, Books, Genre, AUTORS, Rating, Order, OrderBooks, Status, Comments
 }
 
 

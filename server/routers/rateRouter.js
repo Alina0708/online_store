@@ -4,8 +4,8 @@ const checkRole = require('../middleware/checkRoleMiddleware')
 const rateController = require("../controllers/rateController")
 
 
-router.post('/', checkRole('admin'), rateController.createRate)
+router.post('/', rateController.createRate)
 router.get('/', rateController.getAll)
-//router.delete('/:id', checkRole('admin'), genreController.deleteGenreId)
+router.delete('/:id', checkRole('admin'), rateController.deleteRateId)
 
 module.exports = router
