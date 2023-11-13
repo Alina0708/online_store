@@ -11,12 +11,13 @@ import Registration from './pages/Registration';
 import NavBarAdmin from './components/NavBarAdmin';
 import Statistics from './pagesAdmin/Statistics';
 import ControlBooks from './pagesAdmin/ControlBooks';
-import Message from './pagesAdmin/Message';
 import Order from './pagesAdmin/Orders';
 import { observer } from 'mobx-react-lite';
 import { Spinner } from 'react-bootstrap';
 import {check} from "./http/UserAPI";
 import Contacts from './pages/Contacts';
+import Userorder from './pages/userOrders';
+
 
 const App = observer (() =>{
   const { isAuth } = useContext(Context);
@@ -50,13 +51,13 @@ console.log(isAuth)
           <>
             {isAuth.isAdmin && (
               <Route>
-                <Route path="/message" element={<Message />} />
                 <Route path="/controlbook" element={<ControlBooks />} />
                 <Route path="/statistics" element={<Statistics />} />
                 <Route path="/orders" element={<Order />} />
               </Route>
             )}
             <Route path="/shop" element={<Shop />} />
+            <Route path="/userorders" element={<Userorder/>}/>
             <Route path="/basket" element={<Basket />} />
             <Route path="/shop/:id" element={<BookPage />} />
             <Route path="/messageForAdmin" element={<Contacts />} />

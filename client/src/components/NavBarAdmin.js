@@ -27,9 +27,6 @@ const NavBarAdmin = observer(() =>{
       <li className="nav-item" style={{color: 'white'}}>
         <a className="nav-link" href="/orders">Order</a>
       </li>
-      <li className="nav-item" style={{color: 'white'}}>
-        <a className="nav-link" href="/message">Message</a>
-      </li>
     </ul>
     
      :

@@ -27,6 +27,11 @@ const NavBar = observer(() => {
               </a>
             </li>
             <li className="nav-item" style={{ color: "white" }}>
+              <a className="nav-link" href="/userorders">
+                Orders
+              </a>
+            </li>
+            <li className="nav-item" style={{ color: "white" }}>
               <a className="nav-link" href="/messageForAdmin">
                 Contacts
               </a>

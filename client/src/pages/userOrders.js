@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-const Message = observer(() =>{
+const Userorder = observer(() =>{
     return(
-        <div>Message</div>
+        <div>Order</div>
     );
 });
 
-export default Message;
+export default Userorder;
