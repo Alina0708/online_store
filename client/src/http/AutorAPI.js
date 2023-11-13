@@ -63,3 +63,79 @@ export const createComments = async ({ comment, userId, bookId }) => {
     throw new Error("Failed to add comment");
   }
 };
+
+//basket
+
+export const getBasketIdByUserId = async ({ userId }) => {
+  try {
+    const { data } = await $host.get(`api/basket/byUser/${userId}`);
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to add comment");
+  }
+};
+
+export const createBasketBook = async ({ basketId, bookId }) => {
+  try {
+    const { data } = await $host.post("api/basket/create/", {
+      basketId,
+      bookId,
+    });
+    console.log("успешное добавление");
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to add comment");
+  }
+};
+
+export const getBasketBooksByUserId = async (userId) => {
+  try {
+    const { data } = await $host.get(`api/basket/basketbooks/${userId}`);
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed getBasketBooksByUserId");
+  }
+};
+
+export const increaseCount = async (bookId) => {
+  try {
+    if (bookId > 0) {
+      const { data } = await $host.get(
+        `api/basket/basketbooks/increaseCount/${bookId}`
+      );
+      return data;
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed +1");
+  }
+};
+
+export const decreaseCount = async (bookId) => {
+  try {
+    const { data } = await $host.get(
+      `api/basket/basketbooks/decreaseCount/${bookId}`
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed -1");
+  }
+};
+
+export const deleteBasketBooksByUserByBook = async ({basketId, bookId}) => {
+  try {
+    const { data } = await $host.delete("api/basket/deleteBasketBooksByUserByBook/", {
+  params: { basketId: basketId, bookId: bookId }
+});
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed delete book");
+  }
+};
+
+

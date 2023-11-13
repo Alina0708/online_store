@@ -9,15 +9,18 @@ import {
   getCommentsBook,
   getGenreDescription,
   createComments,
+  getBasketIdByUserId,
+  createBasketBook,
 } from "../http/AutorAPI";
 import { check } from "../http/UserAPI";
 
 const BookPage = () => {
   const [books, setBooks] = useState({ info: [] });
   const [userId, setUser] = useState();
-  const [showComments, setShowComment] = useState();
+  const [showComments, setShowComment] = useState([]);
   let [comment, setCommnet] = useState("");
   const [descriptionGenre, setDescriptionGenre] = useState("");
+  const [basket, setBasket] = useState();
   const { id } = useParams();
 
   useEffect(() => {
@@ -34,15 +37,13 @@ const BookPage = () => {
 
         const showComment = await getCommentsBook(id);
         setShowComment(showComment.comments);
-
-        console.log("lol", userId, id);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [id, userId]);
+  }, [id, showComments]);
 
   const handleSendComment = async () => {
     try {
@@ -50,13 +51,25 @@ const BookPage = () => {
       if (userId && id && comment !== "") {
         let data = await createComments({ comment, userId, bookId:id });
         console.log("Comment added successfully");
-        if(data)
-        comment = "";
+        if(data){setCommnet("");}
       }
     } catch (error) {
+
       console.error(error);
     }
   };
+
+  const AddToBasket = async() =>{
+    if (userId){
+    await getBasketIdByUserId({userId}).then(data=>setBasket(data));
+    if(basket){
+    let basketId =basket.basket.id;
+    console.log(basketId);
+    await createBasketBook({basketId:basketId, bookId:id})
+    window.alert("successful add book")
+  }
+  }
+  }
 
   return (
     <Container className="mt-3">
@@ -98,7 +111,7 @@ const BookPage = () => {
               <p>{" " + books.price + "BYN"}</p>
             </div>
             <div>
-              <Button variant="outline-primary">Add to Basket</Button>
+              <Button variant="outline-primary"  onClick={AddToBasket}>Add to Basket</Button>
             </div>
           </div>
         </Col>
