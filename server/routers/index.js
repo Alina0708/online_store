@@ -8,6 +8,7 @@ const booksRouter = require('./booksRouter')
 const rateRouter = require('./rateRouter')
 const commentRouter = require('./commentRouter')
 const basketRouter = require('./basketRouter')
+const statusRouter = require('./statusRouter')
 
 router.use('/user', userRouter)
 router.use('/books', booksRouter)
@@ -16,5 +17,7 @@ router.use('/autor', autorRouter)
 router.use('/rate', rateRouter)
 router.use('/comments', commentRouter)
 router.use('/basket', basketRouter)
+router.use('/status', statusRouter)
+
 
 module.exports = router
