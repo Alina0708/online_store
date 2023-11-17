@@ -29,9 +29,10 @@ const App = observer (() =>{
       if(data.role === 'admin'){
         isAuth.setIsAdmin(true)
         isAuth.setIsAuth(true)
-        console.log("-------" + data.id)
+        console.log(isAuth)
       }else if(data.role === 'USER'){
         isAuth.setIsAuth(true)
+        console.log(isAuth)
       }
         
     }).finally(() => setLoading(false))
@@ -40,7 +41,7 @@ const App = observer (() =>{
 if (loading) {
     return <Spinner animation={"grow"}/>
 }
-console.log(isAuth)
+
   return (
     <BrowserRouter>
       {isAuth.isAdmin ? <NavBarAdmin /> : <NavBar />}

@@ -1,8 +1,4 @@
-const {
-  Basket,
-  BasketBooks,
-  Books,
-} = require("../models/models");
+const { Basket, BasketBooks, Books } = require("../models/models");
 
 class BasketController {
   async createBasket(req, res) {
@@ -156,12 +152,38 @@ class BasketController {
       const deletedCount = await BasketBooks.destroy({
         where: { id },
       });
-  
+
       if (deletedCount > 0) {
-        res.status(200).json({ message: "All basket books deleted successfully" });
+        res
+          .status(200)
+          .json({ message: "All basket books deleted successfully" });
       } else {
-        res.status(404).json({ error: "No basket books found for the specified basketId" });
+        res
+          .status(404)
+          .json({ error: "No basket books found for the specified basketId" });
       }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async deleteBasketBooksByUser(req, res) {
+    try {
+      const { basketId } = req.body;
+      if (basketId === null) {
+        return { status: 400, error: "Invalid basketId" };
+      }
+      
+        const basketBook = await BasketBooks.findAll({
+          where: { basketId },
+        });
+        if (basketBook) {
+          basketBook.map((data) => data.destroy());
+          res.status(200).json({ message: "Basket book deleted successfully" });
+        } else {
+          res.status(404).json({ error: "Basket book not found" });
+        }
+      
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

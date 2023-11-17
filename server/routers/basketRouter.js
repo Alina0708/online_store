@@ -11,6 +11,7 @@ router.get('/basketbooks/:userId', basketController.getBasketBooksByUserId)
 router.get('/basketbooks/increaseCount/:bookId', basketController.increaseCount)
 router.get('/basketbooks/decreaseCount/:bookId', basketController.decreaseCount)
 router.delete('/deleteBasketBooksByUserByBook/', basketController.deleteBasketBooksByUserByBook)
+router.delete('/basketbooks/deletebasket/', basketController.deleteBasketBooksByUser)
 router.delete('/basketbook/:id', basketController.deleteAllBasketBooks)
 
 

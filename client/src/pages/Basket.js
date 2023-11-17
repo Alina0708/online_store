@@ -7,6 +7,9 @@ import {
   increaseCount,
   decreaseCount,
   deleteBasketBooksByUserByBook,
+  createOrder,
+  createOrderBook,
+  deleteBasketBookByUser,
 } from "../http/AutorAPI";
 import { Image } from "react-bootstrap";
 import emptyBasket from "../image/empty-cart.png";
@@ -49,7 +52,7 @@ const Basket = observer(() => {
     };
 
     fetchData();
-  }, [userId, counts, BasketBooks]);
+  }, [userId, counts]);
 
   const handleIncrement = async (bookId) => {
     let sumCount = await increaseCount(bookId);
@@ -66,8 +69,43 @@ const Basket = observer(() => {
   const deleteBook = (basketId, bookId) => {
     console.log(basketId, bookId);
     if (basketId && bookId) {
-      deleteBasketBooksByUserByBook({ basketId, bookId })
+      deleteBasketBooksByUserByBook({ basketId, bookId });
     }
+    getBasketBooksByUserId(userId).then((data) => {
+      setBasketBooks(data.basketBooks);
+    });
+  };
+
+  const createOrders = ({ userId, commonPrice }) => {
+    const successMessage = document.getElementById("successMessage");
+    if (successMessage) {
+      successMessage.style.display = "block";
+    }
+    if ((userId, commonPrice)) {
+      createOrder({
+        userId: userId,
+        commonPrice: commonPrice.totalPrice,
+      }).then((order) => {
+        if ({ BasketBooks }) {
+            BasketBooks.forEach((basketUser) => {
+            console.log(order, basketUser.book.id, basketUser.count);
+            createOrderBook({
+              orderId: order,
+              bookId: basketUser.book.id,
+              count: basketUser.count,
+            });
+          });
+
+          
+            deleteBasketBookByUser({ basketId });
+        
+        }
+      });
+    }
+
+    getBasketBooksByUserId(userId).then((data) => {
+      setBasketBooks(data.basketBooks);
+    });
   };
 
   return (
@@ -86,7 +124,7 @@ const Basket = observer(() => {
                     />
                   </Col>
                   <Col>
-                    <h4>{basketUser.book.name}</h4>
+                    <h3>{basketUser.book.name}</h3>
                     <p>{basketUser.book.description}</p>
                   </Col>
                   <Col>
@@ -132,7 +170,7 @@ const Basket = observer(() => {
                       Delete
                     </Button>
                     <p style={{ paddingTop: 20 }}>
-                      Price: {basketUser.count * basketUser.book.price}
+                      Price: {basketUser.count * basketUser.book.price} BYN
                     </p>
                   </Col>
                 </Row>
@@ -144,13 +182,26 @@ const Basket = observer(() => {
           <Col md={3} style={{ paddingTop: 20 }}>
             <div style={{ border: "solid grey 1px", padding: 10, width: 260 }}>
               <p>Total Count: {totalCounts}</p>
-              <p>Total Price: {totalPrice}</p>
+              <p>Total Price: {totalPrice} BYN</p>
               <Button
                 variant="outline-primary"
                 style={{ maxWidth: 285, minWidth: 240 }}
+                onClick={() => {
+                  createOrders({ userId, commonPrice: { totalPrice } });
+                }}
               >
                 Place an order
               </Button>
+              <p
+                id="successMessage"
+                style={{
+                  display: "none",
+                  background: "lightgreen",
+                  padding: 10,
+                }}
+              >
+                The order has been successfully placed
+              </p>
             </div>
           </Col>
         )}

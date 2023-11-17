@@ -126,11 +126,14 @@ export const decreaseCount = async (bookId) => {
   }
 };
 
-export const deleteBasketBooksByUserByBook = async ({basketId, bookId}) => {
+export const deleteBasketBooksByUserByBook = async ({ basketId, bookId }) => {
   try {
-    const { data } = await $host.delete("api/basket/deleteBasketBooksByUserByBook/", {
-  params: { basketId: basketId, bookId: bookId }
-});
+    const { data } = await $host.delete(
+      "api/basket/deleteBasketBooksByUserByBook/",
+      {
+        params: { basketId: basketId, bookId: bookId },
+      }
+    );
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -138,4 +141,87 @@ export const deleteBasketBooksByUserByBook = async ({basketId, bookId}) => {
   }
 };
 
+//order
+export const createOrder = async ({ userId, commonPrice }) => {
+  try {
+    const { data } = await $host.post("api/order/", { userId, commonPrice });
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed create order");
+  }
+};
 
+export const delOrderAndOrderBooks = async ({orderId}) => {
+  try {
+    const { data } = await $host.delete("api/order/deleteorderandorderbook", { data: {orderId} });
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed delete orderBooks and order");
+  }
+};
+
+//orderBooks
+export const createOrderBook = async ({ orderId, bookId, count }) => {
+  try {
+    const { data } = await $host.post("api/order/orderbook/", { orderId, bookId, count });
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed create orderBook");
+  }
+};
+
+export const getOrderBookByUserId = async ({ userId}) => {
+  try {
+    const { data } = await $host.get(`api/order/orderbook/${userId}`,);
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed create orderBook");
+  }
+};
+
+export const getHistoryOrders = async ({ userId}) => {
+  try {
+    const { data } = await $host.get(`api/order/orderbook/history/${userId}`,);
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed history");
+  }
+};
+
+//BasketBooks
+export const deleteBasketBookByUser = async ({basketId}) => {
+  try {
+    const { data } = await $host.delete("api/basket/basketbooks/deletebasket/", { data: { basketId } });
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed delete basketBooks by user");
+  }
+};
+
+
+//status
+export const getStatusNameById = async ({ id}) => {
+  try {
+    const { data } = await $host.get(`api/status/name/${id}`,);
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed status");
+  }
+};
+
+export const changeOrderStatusOnPaid = async ({orderId}) => {
+  try {
+    const { data } = await $host.put('api/status/paid/',  { orderId } );
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed status paid");
+  }
+};
