@@ -225,3 +225,13 @@ export const changeOrderStatusOnPaid = async ({orderId}) => {
     throw new Error("Failed status paid");
   }
 };
+
+//serach
+export const findBooksByAuthorOrName = async ({bookOrAuthor}) => {
+  try {
+    const { data } = await $host.put("api/books/search/",  { bookOrAuthor } );
+    return data;
+  } catch (error) {
+    console.log("This book not found");
+  }
+};

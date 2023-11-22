@@ -54,13 +54,13 @@ class UserController {
     try {
       const { nameUser, email, message } = req.query;
   
-      const adminEmail = "love";
+      const adminEmail = "alina.sevryuk0708@gmail.com";
   
       const transporter = nodemailer.createTransport({
-        service: "love",
+        service: "alina.sevryuk0708@gmail.com",
         auth: {
-          user: "love",
-          pass: "love",
+          user: "alina46203a@gmail.com",
+          pass: "mpvd bbyq kjru bfxl",
         },
       });
   

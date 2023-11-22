@@ -7,7 +7,7 @@ const GenreBar = observer(() => {
   const { books } = useContext(Context);
 
   return (
-    <ListGroup>
+    <ListGroup style={{display: "flex", flexDirection: "row", justifyContent:"center"}}>
       {books.genre.map((genre) => (
         <ListGroup.Item
           style={{ cursor: "pointer" }}
