@@ -2,7 +2,7 @@ import { $authHost, $host } from "./index";
 
 //genre
 export const createGenre = async (name, description) => {
-  const { data } = await $authHost.post("api/genre", { name, description });
+  const { data } = await $authHost.post("api/genre/", { name, description });
   return data;
 };
 
@@ -16,6 +16,16 @@ export const getGenreDescription = async (name) => {
   return data;
 };
 
+export const deleteGenre = async ({id}) => {
+  try{
+    console.log("id", {id})
+  const { data } = await $authHost.delete(`api/genre/${ id }`, );
+  return data;
+}catch(e){
+  console.log("error", e )
+}
+};
+
 //autors
 export const createAutor = async ({ first_name, last_name }) => {
   const { data } = await $authHost.post("api/autor", { first_name, last_name });
@@ -27,9 +37,14 @@ export const getAutors = async () => {
   return data;
 };
 
-export const deleteAutors = async (id) => {
-  const { data } = await $authHost.post("api/autor/", { id });
+export const deleteAutors = async ({id}) => {
+  try{
+    console.log("id", {id})
+  const { data } = await $authHost.delete(`api/autor/${ id }`, );
   return data;
+}catch(e){
+  console.log("error", e )
+}
 };
 
 //books

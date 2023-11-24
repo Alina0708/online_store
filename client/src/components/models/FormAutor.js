@@ -34,6 +34,7 @@ const FormAutor = ({show, onHide}) => {
                         value={first_name}
                         onChange={e => setSurname(e.target.value)}
                         placeholder={"Enter surname"}
+                        style={{ marginBottom: '10px' }} 
                     />
                      <Form.Control
                         value={last_name}

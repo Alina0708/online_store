@@ -1,23 +1,26 @@
-import React from 'react';
+import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import ControlAutors from "../components/Admin/ControlAutors";
 import { observer } from "mobx-react-lite";
-
+import ControlGenre from "../components/Admin/ControlGenre";
+import Control from "../components/Admin/Control"
 
 const ControlBooks = observer(() => {
-
   return (
     <Container>
-        <Row>
-      <Col md={4}>
-        <ControlAutors/>
-      </Col>
+      <Row>
+        <Col md={4}>
+          <Row>
+            <ControlAutors />
+          </Row>
+          <Row>
+            <ControlGenre/>
+          </Row>
+        </Col>
 
-      <Col md={1}>
-       
-      </Col>
-
-      <Col md={6}></Col>
+        <Col md={6}>
+          <Control/>
+        </Col>
       </Row>
     </Container>
   );

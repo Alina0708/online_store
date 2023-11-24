@@ -45,7 +45,6 @@ const [rate, setRate] = useState();
         if(userId && id)
         { 
         getRateByUser({ userId, bookId: parseInt(id, 10) }).then(data => {setRate(data.rate);});
-            console.log("rate",  rate, "rating", rating)
         }
       } catch (error) {
         console.error(error);
@@ -53,11 +52,10 @@ const [rate, setRate] = useState();
     };
 
     fetchData();
-  }, [id, showComments?.length, comment, rating]);
+  }, [id, showComments?.length, comment, rating, userId]);
 
   const handleSendComment = async () => {
     try {
-      console.log(comment, userId, id);
       if (userId && id && comment !== "") {
         let data = await createComments({ comment, userId, bookId: id });
         console.log("Comment added successfully");
