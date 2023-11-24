@@ -235,3 +235,23 @@ export const findBooksByAuthorOrName = async ({bookOrAuthor}) => {
     console.log("This book not found");
   }
 };
+
+//rate
+export const createRate = async ({ rate, userId, bookId }) => {
+  try {
+    const { data } = await $host.post("api/rate/",  { rate, userId, bookId } );
+    return data;
+  } catch (error) {
+    console.log("This book not found");
+  }
+};
+
+export const getRateByUser = async ({ userId, bookId }) => {
+  try {
+    console.log("api", userId, bookId)
+    const { data } = await $host.get(`api/rate/userrate?userId=${userId}&bookId=${bookId}`);
+    return data;
+  } catch (error) {
+    console.log("This rate not found");
+  }
+};

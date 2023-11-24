@@ -11,6 +11,8 @@ import {
   createComments,
   getBasketIdByUserId,
   createBasketBook,
+  createRate,
+  getRateByUser
 } from "../http/AutorAPI";
 import { check } from "../http/UserAPI";
 
@@ -22,6 +24,8 @@ const BookPage = () => {
   const [descriptionGenre, setDescriptionGenre] = useState("");
   const [basket, setBasket] = useState();
   const { id } = useParams();
+  const [rating, setRating] = useState(0);
+const [rate, setRate] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,39 +41,76 @@ const BookPage = () => {
 
         const showComment = await getCommentsBook(id);
         setShowComment(showComment.comments);
+        
+        if(userId && id)
+        { 
+        getRateByUser({ userId, bookId: parseInt(id, 10) }).then(data => {setRate(data.rate);});
+            console.log("rate",  rate, "rating", rating)
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [id, showComments]);
+  }, [id, showComments?.length, comment, rating]);
 
   const handleSendComment = async () => {
     try {
       console.log(comment, userId, id);
       if (userId && id && comment !== "") {
-        let data = await createComments({ comment, userId, bookId:id });
+        let data = await createComments({ comment, userId, bookId: id });
         console.log("Comment added successfully");
-        if(data){setCommnet("");}
+        if (data) {
+          setCommnet("");
+          //setShowComment([...showComments, {comment:comment, userId:userId, bookId: id}]);
+        }
       }
     } catch (error) {
-
       console.error(error);
     }
   };
 
-  const AddToBasket = async() =>{
-    if (userId){
-    await getBasketIdByUserId({userId}).then(data=>setBasket(data));
-    if(basket){
-    let basketId =basket.basket.id;
-    console.log(basketId);
-    await createBasketBook({basketId:basketId, bookId:id})
-    window.alert("successful add book")
-  }
-  }
-  }
+  const AddToBasket = async () => {
+    if (userId) {
+      await getBasketIdByUserId({ userId }).then((data) => setBasket(data));
+      if (basket) {
+        let basketId = basket.basket.id;
+        console.log(basketId);
+        await createBasketBook({ basketId: basketId, bookId: id });
+        window.alert("successful add book");
+      }
+    }
+  };
+
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          onClick={() => handleStarClick(i)}
+          onMouseEnter={() => setRating(i)}
+          onMouseLeave={() => setRating(0)}
+          style={{
+            cursor: 'pointer',
+            fontSize: '28px', 
+            color: (rate === 0 && i <= rating) || (i <= rate) ? 'gold' : 'gray'
+
+          }}
+        >
+          &#9733;
+        </span>
+      );
+    }
+    return stars;
+  };
+
+  const handleStarClick = (star) => {
+    setRating(star);
+    console.log({rate:star, userId, id})
+    createRate({rate:star, userId, bookId:id})
+  };
 
   return (
     <Container className="mt-3">
@@ -83,10 +124,13 @@ const BookPage = () => {
           <Row>
             <div
               style={{ height: 20 }}
-              className="d-flex align-item-center mt-1"
+              className="d-flex mt-1"
             >
+              <div style={{display:"flex"}}>
               <p>{books.rating}</p>
               <Image src={star} width={20} height={20} />
+              </div>
+              <div style={{display:"flex", alignItems:"center", marginLeft: 140}}> {renderStars()}</div>
             </div>
           </Row>
         </Col>
@@ -111,7 +155,9 @@ const BookPage = () => {
               <p>{" " + books.price + "BYN"}</p>
             </div>
             <div>
-              <Button variant="outline-primary"  onClick={AddToBasket}>Add to Basket</Button>
+              <Button variant="outline-primary" onClick={AddToBasket}>
+                Add to Basket
+              </Button>
             </div>
           </div>
         </Col>

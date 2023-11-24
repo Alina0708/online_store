@@ -22,6 +22,16 @@ class RateController {
       if (!user || !book) {
         return res.status(404).json({ error: "User or book not found" });
       }
+      const existingRating = await Rating.findOne({
+        where: {
+          userId,
+          bookId,
+        },
+      });
+  
+      if (existingRating) {
+        return res.status(400).json({ error: "User already rated this book" });
+      }
 
       const newRating = await Rating.create({
         rate,
@@ -68,6 +78,33 @@ class RateController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "error" });
+    }
+  }
+
+
+  async getRatingByUserIdAndBookId(req, res) {
+    const { userId, bookId } = req.query;
+  
+    try {
+      if(!userId){
+        return res.status(400).json({ error: "userId not found" });
+      }
+      if(!bookId){
+        return res.status(400).json({ error: "bookId not found" });
+      }
+      const existingRating = await Rating.findOne({
+        where: {
+          userId,
+          bookId,
+        },
+      });
+  
+      const rate = existingRating ? existingRating.rate : 0;
+  
+      res.status(200).json({ rate });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error...", userId:userId, bookId:bookId });
     }
   }
 }

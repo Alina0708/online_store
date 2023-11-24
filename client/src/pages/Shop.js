@@ -19,14 +19,11 @@ const Shop = observer(() => {
     getGenre().then((data) => books.setGenre(data));
     getAutors().then((data) => books.setAutors(data));
   }, [books]);
-
-  console.log("SEARCHbOOKS", searchBook, 'searchQuery', searchQuery, 'books.books?.length', books.books?.length);
   
   const handleSearch = (searchQueryValue) => {
     findBooksByAuthorOrName({ bookOrAuthor: searchQueryValue }).then((data) => {
       setSearchBook(data.books);
     });
-    // console.log("SEARCHbOOKS", searchBook, 'searchQuery', searchQuery, 'books.books?.length', books.books?.length);
   };
 
   return (
