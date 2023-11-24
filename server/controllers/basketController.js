@@ -51,19 +51,41 @@ class BasketController {
   async createBasketBook(req, res) {
     try {
       const { basketId, bookId } = req.body;
-      const newBasketBook = await BasketBooks.create({
-        basketId,
-        bookId,
-        count: 1,
+      const existingBasketBook = await BasketBooks.findOne({
+        where: { basketId, bookId },
       });
 
-      return res.status(201).json({
-        message: "Basket book created successfully",
-        basketBook: newBasketBook,
-      });
+      if (existingBasketBook) {
+        await BasketBooks.update(
+          { count: existingBasketBook.count + 1 },
+          { where: { basketId, bookId } }
+        );
+
+        const updatedBasketBook = await BasketBooks.findOne({
+          where: { basketId, bookId },
+        });
+
+        return res.status(200).json({
+          message: "Basket book count updated successfully",
+          basketBook: updatedBasketBook,
+        });
+      } else {
+        const newBasketBook = await BasketBooks.create({
+          basketId,
+          bookId,
+          count: 1,
+        });
+
+        return res.status(201).json({
+          message: "Basket book created successfully",
+          basketBook: newBasketBook,
+        });
+      }
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Failed to create basket book" });
+      return res
+        .status(500)
+        .json({ message: "Failed to create/update basket book" });
     }
   }
 
@@ -173,17 +195,16 @@ class BasketController {
       if (basketId === null) {
         return { status: 400, error: "Invalid basketId" };
       }
-      
-        const basketBook = await BasketBooks.findAll({
-          where: { basketId },
-        });
-        if (basketBook) {
-          basketBook.map((data) => data.destroy());
-          res.status(200).json({ message: "Basket book deleted successfully" });
-        } else {
-          res.status(404).json({ error: "Basket book not found" });
-        }
-      
+
+      const basketBook = await BasketBooks.findAll({
+        where: { basketId },
+      });
+      if (basketBook) {
+        basketBook.map((data) => data.destroy());
+        res.status(200).json({ message: "Basket book deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Basket book not found" });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

@@ -32,6 +32,7 @@ const App = observer (() =>{
         console.log(isAuth)
       }else if(data.role === 'USER'){
         isAuth.setIsAuth(true)
+        isAuth.setIsAdmin(false)
         console.log(isAuth)
       }
         
@@ -44,7 +45,7 @@ if (loading) {
 
   return (
     <BrowserRouter>
-      {isAuth.isAdmin ? <NavBarAdmin /> : <NavBar />}
+      {isAuth.isAdmin ? <NavBarAdmin /> : (isAuth.isAuth && <NavBar />)}
       <Routes>
         <Route path="/" element={<Autorization />} />
         <Route path="/registr" element={<Registration />} />

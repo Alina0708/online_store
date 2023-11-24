@@ -1,0 +1,8 @@
+.circular-progressbar-text {
+  dominant-baseline: middle;
+  text-anchor: middle;
+  alignment-baseline: middle;
+  font-size: 20; /* Размер текста */
+  fill: #f88; /* Цвет текста */
+}
+

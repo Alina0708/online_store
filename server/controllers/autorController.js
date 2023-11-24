@@ -24,12 +24,12 @@ class AutorController {
       const autor = await AUTORS.findOne({ where: { id } }); 
 
       if (!autor) {
-        return res.status(404).json({ error: "Autor не найден" });
+        return res.status(404).json("Autor not found");
       }
 
-      await autor.destroy(); // Удалите жанр
+      await autor.destroy(); 
 
-      res.status(204).send("Успешно удалено"); // Верните успешный статус без содержимого
+      res.status(204).send("Успешно удалено"); 
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Произошла ошибка при удалении жанра" });

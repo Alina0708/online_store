@@ -24,7 +24,7 @@ const Registration = observer(() =>{
     const [password, setPassword] = useState();
     const history = useNavigate();
     const registr = async() =>{
-    let data = await registration(email, password);
+    await registration(email, password);
     history("/");
     }
         return (

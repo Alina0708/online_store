@@ -115,6 +115,16 @@ export const getBasketBooksByUserId = async (userId) => {
   }
 };
 
+export const getOrderBook = async () => {
+  try {
+    const { data } = await $host.get("api/order/orderbook/");
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed getBasketBooks");
+  }
+};
+
 export const increaseCount = async (bookId) => {
   try {
     if (bookId > 0) {
@@ -157,6 +167,15 @@ export const deleteBasketBooksByUserByBook = async ({ basketId, bookId }) => {
 };
 
 //order
+export const getOrders = async () => {
+  try{
+  const { data } = await $host.get("api/order/");
+  return data;
+}catch(e){
+  console.log("error");
+}
+}; 
+
 export const createOrder = async ({ userId, commonPrice }) => {
   try {
     const { data } = await $host.post("api/order/", { userId, commonPrice });
