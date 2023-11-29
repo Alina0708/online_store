@@ -11,19 +11,19 @@ export const getGenre = async () => {
   return data;
 };
 
-export const getGenreDescription = async (name) => {
+export const getGenreDescription = async ({name}) => {
   const { data } = await $host.get(`api/genre/description/${name}`);
   return data;
 };
 
-export const deleteGenre = async ({id}) => {
-  try{
-    console.log("id", {id})
-  const { data } = await $authHost.delete(`api/genre/${ id }`, );
-  return data;
-}catch(e){
-  console.log("error", e )
-}
+export const deleteGenre = async ({ id }) => {
+  try {
+    console.log("id", { id });
+    const { data } = await $authHost.delete(`api/genre/${id}`);
+    return data;
+  } catch (e) {
+    console.log("error", e);
+  }
 };
 
 //autors
@@ -37,14 +37,14 @@ export const getAutors = async () => {
   return data;
 };
 
-export const deleteAutors = async ({id}) => {
-  try{
-    console.log("id", {id})
-  const { data } = await $authHost.delete(`api/autor/${ id }`, );
-  return data;
-}catch(e){
-  console.log("error", e )
-}
+export const deleteAutors = async ({ id }) => {
+  try {
+    console.log("id", { id });
+    const { data } = await $authHost.delete(`api/autor/${id}`);
+    return data;
+  } catch (e) {
+    console.log("error", e);
+  }
 };
 
 //books
@@ -54,11 +54,44 @@ export const getBooks = async () => {
 };
 
 export const getBookOneId = async (id) => {
-  const { data } = await $host.get(`api/books/${id}`);
-  return data;
+  try {
+    const { data } = await $host.get(`api/books/${id}`);
+    return data;
+  } catch (e) {
+    console.log("getBookOneId - error");
+  }
 };
 
-//rate
+
+export const createBook = async ({ name, autorId, description, price, genreId, img }) => {
+  try {
+    const formData = new FormData(); 
+    formData.append('name', name);
+    formData.append('autorId', autorId);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('genreId', genreId);
+    formData.append('img', img); 
+
+    const { data } = await $authHost.post("api/books/", formData);
+    return data;
+  } catch (e) {
+    console.error("create book - error", e);
+    throw e; 
+  }
+};
+
+export const deleteBook = async ({id}) => {
+  try {
+    const { data } = await $authHost.delete( `api/books/${id}`, );
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed delete book");
+  }
+};
+
+
 //comments
 export const getCommentsBook = async (bookId) => {
   const { data } = await $host.get(`api/comments/comment/${bookId}`);
@@ -168,13 +201,13 @@ export const deleteBasketBooksByUserByBook = async ({ basketId, bookId }) => {
 
 //order
 export const getOrders = async () => {
-  try{
-  const { data } = await $host.get("api/order/");
-  return data;
-}catch(e){
-  console.log("error");
-}
-}; 
+  try {
+    const { data } = await $host.get("api/order/");
+    return data;
+  } catch (e) {
+    console.log("error");
+  }
+};
 
 export const createOrder = async ({ userId, commonPrice }) => {
   try {
@@ -186,9 +219,11 @@ export const createOrder = async ({ userId, commonPrice }) => {
   }
 };
 
-export const delOrderAndOrderBooks = async ({orderId}) => {
+export const delOrderAndOrderBooks = async ({ orderId }) => {
   try {
-    const { data } = await $host.delete("api/order/deleteorderandorderbook", { data: {orderId} });
+    const { data } = await $host.delete("api/order/deleteorderandorderbook", {
+      data: { orderId },
+    });
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -199,7 +234,11 @@ export const delOrderAndOrderBooks = async ({orderId}) => {
 //orderBooks
 export const createOrderBook = async ({ orderId, bookId, count }) => {
   try {
-    const { data } = await $host.post("api/order/orderbook/", { orderId, bookId, count });
+    const { data } = await $host.post("api/order/orderbook/", {
+      orderId,
+      bookId,
+      count,
+    });
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -207,9 +246,9 @@ export const createOrderBook = async ({ orderId, bookId, count }) => {
   }
 };
 
-export const getOrderBookByUserId = async ({ userId}) => {
+export const getOrderBookByUserId = async ({ userId }) => {
   try {
-    const { data } = await $host.get(`api/order/orderbook/${userId}`,);
+    const { data } = await $host.get(`api/order/orderbook/${userId}`);
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -217,9 +256,9 @@ export const getOrderBookByUserId = async ({ userId}) => {
   }
 };
 
-export const getHistoryOrders = async ({ userId}) => {
+export const getHistoryOrders = async ({ userId }) => {
   try {
-    const { data } = await $host.get(`api/order/orderbook/history/${userId}`,);
+    const { data } = await $host.get(`api/order/orderbook/history/${userId}`);
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -228,9 +267,12 @@ export const getHistoryOrders = async ({ userId}) => {
 };
 
 //BasketBooks
-export const deleteBasketBookByUser = async ({basketId}) => {
+export const deleteBasketBookByUser = async ({ basketId }) => {
   try {
-    const { data } = await $host.delete("api/basket/basketbooks/deletebasket/", { data: { basketId } });
+    const { data } = await $host.delete(
+      "api/basket/basketbooks/deletebasket/",
+      { data: { basketId } }
+    );
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -238,11 +280,10 @@ export const deleteBasketBookByUser = async ({basketId}) => {
   }
 };
 
-
 //status
-export const getStatusNameById = async ({ id}) => {
+export const getStatusNameById = async ({ id }) => {
   try {
-    const { data } = await $host.get(`api/status/name/${id}`,);
+    const { data } = await $host.get(`api/status/name/${id}`);
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -250,9 +291,9 @@ export const getStatusNameById = async ({ id}) => {
   }
 };
 
-export const changeOrderStatusOnPaid = async ({orderId}) => {
+export const changeOrderStatusOnPaid = async ({ orderId }) => {
   try {
-    const { data } = await $host.put('api/status/paid/',  { orderId } );
+    const { data } = await $host.put("api/status/paid/", { orderId });
     return data;
   } catch (error) {
     console.error("error" + error);
@@ -261,9 +302,9 @@ export const changeOrderStatusOnPaid = async ({orderId}) => {
 };
 
 //serach
-export const findBooksByAuthorOrName = async ({bookOrAuthor}) => {
+export const findBooksByAuthorOrName = async ({ bookOrAuthor }) => {
   try {
-    const { data } = await $host.put("api/books/search/",  { bookOrAuthor } );
+    const { data } = await $host.put("api/books/search/", { bookOrAuthor });
     return data;
   } catch (error) {
     console.log("This book not found");
@@ -273,7 +314,7 @@ export const findBooksByAuthorOrName = async ({bookOrAuthor}) => {
 //rate
 export const createRate = async ({ rate, userId, bookId }) => {
   try {
-    const { data } = await $host.post("api/rate/",  { rate, userId, bookId } );
+    const { data } = await $host.post("api/rate/", { rate, userId, bookId });
     return data;
   } catch (error) {
     console.log("This book not found");
@@ -282,8 +323,10 @@ export const createRate = async ({ rate, userId, bookId }) => {
 
 export const getRateByUser = async ({ userId, bookId }) => {
   try {
-    console.log("api", userId, bookId)
-    const { data } = await $host.get(`api/rate/userrate?userId=${userId}&bookId=${bookId}`);
+    console.log("api", userId, bookId);
+    const { data } = await $host.get(
+      `api/rate/userrate?userId=${userId}&bookId=${bookId}`
+    );
     return data;
   } catch (error) {
     console.log("This rate not found");

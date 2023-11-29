@@ -163,6 +163,28 @@ class BooksController {
       res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
   }
+
+  async deleteBookById(req, res) {
+    const { id } = req.params; 
+
+    try {
+      if(!id){
+        res.status(404).json({ error: "id undefined" });
+      }
+      const book = await Books.findOne({ where: { id } }); 
+
+      if (!book) {
+        return res.status(404).json("book not found");
+      }
+
+      await book.destroy(); 
+
+      res.status(204).send("Успешно удалено"); 
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Произошла ошибка при удалении book" });
+    }
+  }
 }
 
 module.exports = new BooksController();

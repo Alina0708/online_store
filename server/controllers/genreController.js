@@ -1,5 +1,6 @@
 const { Genre } = require("../models/models");
 const ApiError = require("../error/ApiError");
+const { Op } = require("sequelize");
 
 class GenreController {
   async create(req, res) {
@@ -40,19 +41,19 @@ class GenreController {
   async getGenreDescription(req, res) {
     const { name } = req.params;
 
-    try {
-      const genre = await Genre.findOne({ where: { name } });
+  try {
+    const genre = await Genre.findOne({ where: { name: { [Op.like]: `${name}%` } } });
 
-      if (genre) {
-        const description = genre.description;
-        res.status(200).json(description); 
-      } else {
-        res.status(404).json({ message: "Genre not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (genre) {
+      const description = genre.description;
+      res.status(200).json(description); 
+    } else {
+      res.status(404).json({ message: "Genre not found" });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
   }
 }
 

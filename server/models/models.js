@@ -40,7 +40,7 @@ const AUTORS= sequelize.define('autors', {
 
 const Rating= sequelize.define('ratings', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    rate: {type: DataTypes.INTEGER, allowNull:false},
+    rate: {type: DataTypes.INTEGER, allowNull:false, defaultValue: 0},
 })
 
 const Comments = sequelize.define('comments', {

@@ -33,7 +33,7 @@ const [rate, setRate] = useState();
         const bookData = await getBookOneId(id);
         setBooks(bookData);
 
-        const genreDescription = await getGenreDescription(bookData.genre);
+        const genreDescription = await getGenreDescription({name:bookData.genre});
         setDescriptionGenre(genreDescription);
 
         const userData = await check();

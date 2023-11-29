@@ -18,7 +18,7 @@ const ControlBooks = observer(() => {
           </Row>
         </Col>
 
-        <Col md={6}>
+        <Col md={8}>
           <Control/>
         </Col>
       </Row>

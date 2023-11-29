@@ -61,145 +61,144 @@ const Statistics = observer(() => {
   };
 
   useEffect(() => {
-    try{
-    const chart = new Chart(document.getElementById("popularity-chart"), {
-      type: "bar",
-      data: data,
-      options: options,
-    });
-    return () => chart.destroy();
-}catch(e){
-    return <p>Loading ...</p>
-}
+    try {
+      const chart = new Chart(document.getElementById("popularity-chart"), {
+        type: "bar",
+        data: data,
+        options: options,
+      });
+      return () => chart.destroy();
+    } catch (e) {
+      return <p>Loading ...</p>;
+    }
   }, [books]);
 
   //3
   useEffect(() => {
-    try{
-    if (bookOrders.length > 0) {
-      const booksCountMap = new Map();
-      bookOrders.forEach((order) => {
-        const { bookId, count } = order;
-        if (booksCountMap.has(bookId)) {
-          booksCountMap.set(bookId, booksCountMap.get(bookId) + count);
-        } else {
-          booksCountMap.set(bookId, count);
-        }
-      });
-      const sortedBooks = [...booksCountMap.entries()].sort(
-        (a, b) => b[1] - a[1]
-      );
+    try {
+      if (bookOrders.length > 0) {
+        const booksCountMap = new Map();
+        bookOrders.forEach((order) => {
+          const { bookId, count } = order;
+          if (booksCountMap.has(bookId)) {
+            booksCountMap.set(bookId, booksCountMap.get(bookId) + count);
+          } else {
+            booksCountMap.set(bookId, count);
+          }
+        });
+        const sortedBooks = [...booksCountMap.entries()].sort(
+          (a, b) => b[1] - a[1]
+        );
 
-      const topBooks = sortedBooks.slice(0, 4);
+        const topBooks = sortedBooks.slice(0, 4);
 
-      const labels = topBooks.map(([bookId]) => `Book ${bookId}`);
-      const dataValues = topBooks.map(([_, count]) => count);
+        const labels = topBooks.map(([bookId]) => `Book ${bookId}`);
+        const dataValues = topBooks.map(([_, count]) => count);
 
-      const ctx = document.getElementById("books-orders-chart");
-      if (ctx) {
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Orders Count",
-                data: dataValues,
-                backgroundColor: "rgba(221, 160, 221, 0.2)",
-                borderColor: "rgba(221, 160, 221, 1)",
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            indexAxis: "y",
-            scales: {
-              x: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "Orders Count",
+        const ctx = document.getElementById("books-orders-chart");
+        if (ctx) {
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Orders Count",
+                  data: dataValues,
+                  backgroundColor: "rgba(221, 160, 221, 0.2)",
+                  borderColor: "rgba(221, 160, 221, 1)",
+                  borderWidth: 1,
                 },
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: "Books",
+              ],
+            },
+            options: {
+              indexAxis: "y",
+              scales: {
+                x: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Orders Count",
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: "Books",
+                  },
                 },
               },
             },
-          },
-        });
+          });
+        }
       }
+    } catch (e) {
+      return <p>Loading ...</p>;
     }
-}catch(e){
-    return <p>Loading ...</p>
-}
   }, [bookOrders]);
 
   //4
   useEffect(() => {
-    try{
-    if (orderData.length > 0) {
-      const dailyRevenueMap = new Map();
-      orderData.forEach((order) => {
-        const date = new Date(order.createdAt).toLocaleDateString();
-        const revenue =+
-          order.commonPrice; 
+    try {
+      if (orderData.length > 0) {
+        const dailyRevenueMap = new Map();
+        orderData.forEach((order) => {
+          const date = new Date(order.createdAt).toLocaleDateString();
+          const revenue = +order.commonPrice;
 
-        if (dailyRevenueMap.has(date)) {
-          dailyRevenueMap.set(date, dailyRevenueMap.get(date) + revenue);
-        } else {
-          dailyRevenueMap.set(date, revenue);
-        }
-      });
+          if (dailyRevenueMap.has(date)) {
+            dailyRevenueMap.set(date, dailyRevenueMap.get(date) + revenue);
+          } else {
+            dailyRevenueMap.set(date, revenue);
+          }
+        });
 
-      const dates = [...dailyRevenueMap.keys()];
-      const revenues = [...dailyRevenueMap.values()];
+        const dates = [...dailyRevenueMap.keys()];
+        const revenues = [...dailyRevenueMap.values()];
 
-      const ctx = document.getElementById("daily-revenue-chart");
-      if (ctx) {
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: dates,
-            datasets: [
-              {
-                label: "Daily Revenue",
-                data: revenues,
-                borderColor: "rgba(0, 128, 0, 1)",
-                borderWidth: 1,
-                fill: false,
-              },
-            ],
-          },
-          options: {
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: "Date",
+        const ctx = document.getElementById("daily-revenue-chart");
+        if (ctx) {
+          new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: dates,
+              datasets: [
+                {
+                  label: "Daily Revenue",
+                  data: revenues,
+                  borderColor: "rgba(0, 128, 0, 1)",
+                  borderWidth: 1,
+                  fill: false,
                 },
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: "Revenue",
+              ],
+            },
+            options: {
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: "Date",
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: "Revenue",
+                  },
                 },
               },
             },
-          },
-        });
+          });
+        }
       }
+    } catch (e) {
+      return <p>Loading ...</p>;
     }
-}catch(e){
-    return <p>Loading ...</p>
-}
   }, [orderData]);
 
   return (
     <Container>
-      <Row style={{marginTop:20}}>
+      <Row style={{ marginTop: 20 }}>
         <Col
           md={2}
           style={{
@@ -252,16 +251,31 @@ const Statistics = observer(() => {
         </Col>
       </Row>
       <Row>
-        <Col md={7}
+        <Col
+          md={7}
           style={{
             border: "solid #D3D3D3 1px",
             margin: 10,
-          }}>
-          <div style={{ height: "350px", width:"650px" }}>
+          }}
+        >
+          <div style={{ height: "350px", width: "650px" }}>
             <canvas id="daily-revenue-chart"></canvas>
           </div>
         </Col>
-        <Col md={3}></Col>
+        <Col
+          md={2}
+          style={{
+            border: "solid #D3D3D3 1px",
+            margin: 10,
+          }}
+        ></Col>
+        <Col
+          md={2}
+          style={{
+            border: "solid #D3D3D3 1px",
+            margin: 10,
+          }}
+        ></Col>
       </Row>
     </Container>
   );
