@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { getBooks, getOrderBook, getOrders } from "../http/AutorAPI";
+import { getBooks, getOrderBook, getOrders, getGenreCount } from "../http/AutorAPI";
 import { Container, Row, Col } from "react-bootstrap";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import Chart from "chart.js/auto";
 import "../CSS/CircularProgressWithText.css";
+import 'chartjs-plugin-datalabels';
 
 const Statistics = observer(() => {
   const [books, setBooks] = useState([]);
   const [bookOrders, setOrderData] = useState([]);
   const [orderData, setOrder] = useState([]);
+  const [booksCount, setBooksCount] = useState([])
 
   useEffect(() => {
     getBooks().then((data) => setBooks(data));
     getOrderBook().then((data) => setOrderData(data));
     getOrders().then((data) => setOrder(data));
+    getGenreCount().then((data)=> setBooksCount(data));
   }, []);
+  console.log("booksCount", orderData)
 
   //1
   const totalBooks = books.length;
@@ -90,7 +94,7 @@ const Statistics = observer(() => {
           (a, b) => b[1] - a[1]
         );
 
-        const topBooks = sortedBooks.slice(0, 4);
+        const topBooks = sortedBooks.slice(0, 5);
 
         const labels = topBooks.map(([bookId]) => `Book ${bookId}`);
         const dataValues = topBooks.map(([_, count]) => count);
@@ -196,6 +200,84 @@ const Statistics = observer(() => {
     }
   }, [orderData]);
 
+  //5
+  const chartRef = useRef(null);
+
+  const calculatePercentageByDay = () => {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const ordersPerDay = {};
+
+    orderData.forEach(order => {
+      const orderDate = new Date(order.createdAt);
+      const dayOfWeek = daysOfWeek[orderDate.getDay()];
+
+      if (ordersPerDay[dayOfWeek]) {
+        ordersPerDay[dayOfWeek]++;
+      } else {
+        ordersPerDay[dayOfWeek] = 1;
+      }
+    });
+
+    const totalOrders = orderData.length;
+
+    const dataLabels = Object.keys(ordersPerDay);
+    const dataValues = dataLabels.map(day => ((ordersPerDay[day] / totalOrders) * 100).toFixed(2));
+
+    displayChart(dataLabels, dataValues);
+  };
+
+  const displayChart = (labels, data) => {
+    const ctx = document.getElementById('orderChart');
+
+    if (chartRef.current !== null) {
+      chartRef.current.destroy();
+    }
+
+    chartRef.current = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Order Percentage by Day',
+            data: data,
+            backgroundColor: [
+              '#aee5b0', //green -
+              '#f6f79e',//red  -
+              '#afd8db',//blue -
+              '#bf8ab6', //pink -
+              '#f79eda', //orange
+              '#eda1b3',
+              '#848aa1'
+            ],
+            borderWidth: 1
+          }
+        ]
+      },
+       options: {
+      plugins: {
+        datalabels: {
+          formatter: (value, ctx) => {
+            const total = ctx.chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+            const percentage = ((value / total) * 100).toFixed(2);
+            return `${percentage}%`;
+          },
+          color: '#fff',
+          font: {
+            weight: 'bold'
+          },
+          display: true
+        }
+      }
+    }
+  });
+};
+  useEffect(() => {
+    if (orderData.length > 0) {
+      calculatePercentageByDay();
+    }
+  }, [orderData]);
+
   return (
     <Container>
       <Row style={{ marginTop: 20 }}>
@@ -252,30 +334,40 @@ const Statistics = observer(() => {
       </Row>
       <Row>
         <Col
-          md={7}
+          md={6}
           style={{
             border: "solid #D3D3D3 1px",
             margin: 10,
           }}
         >
-          <div style={{ height: "350px", width: "650px" }}>
+          <p>Daily revenue</p>
+          <div style={{ height: "400px", width: "650px" }}>
             <canvas id="daily-revenue-chart"></canvas>
           </div>
         </Col>
         <Col
-          md={2}
+          md={3}
           style={{
             border: "solid #D3D3D3 1px",
             margin: 10,
           }}
-        ></Col>
+        > <p>Order Percentage by Day</p>
+        <canvas id="orderChart" width="500" height="400"></canvas></Col>
         <Col
           md={2}
           style={{
             border: "solid #D3D3D3 1px",
             margin: 10,
           }}
-        ></Col>
+        >
+          <p>Number of books of each genre</p>
+           {booksCount && Object.keys(booksCount).map((genre) => (
+        <Row key={genre}>
+          <Col style={{fontSize:14}}>{genre}</Col>
+          <Col style={{ textAlign: 'right' }}>{booksCount[genre]}</Col>
+        </Row>
+      ))}
+        </Col>
       </Row>
     </Container>
   );

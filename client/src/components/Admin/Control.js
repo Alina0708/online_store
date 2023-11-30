@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Row, Col, Form } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import { getBooks, deleteBook } from "../../http/AutorAPI";
 import "../../CSS/ControlBookTable.css";
@@ -8,6 +8,8 @@ import AddBookModal from "../models/AddBookModal";
 const Control = observer(() => {
   const [books, setBooks] = useState([]);
   const [showModal, setShowModal] = useState(false);
+      const [searchQuery, setSearchQuery] = useState("");
+    const [searchBook, setSearchBook] = useState([]);
 
   useEffect(() => {
     getBooks().then((data) => {
@@ -36,10 +38,29 @@ const Control = observer(() => {
       console.error("Failed to delete book", error);
     }
   };
+  
+    const handleSearch = (searchQueryValue) => {
+      // findBooksByAuthorOrName({ bookOrAuthor: searchQueryValue }).then((data) => {
+      //   setSearchBook(data.books);
+      // });
+    };
 
   return (
     <Container>
       <div style={{ marginBottom: 10 }}>Books</div>
+      <Row style={{ marginBottom: 10, marginTop: 10 }}>
+            <Col>
+              <Form.Control
+                type="text"
+                placeholder="Search by book title or author"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  handleSearch(e.target.value);
+                }}
+              />
+            </Col>
+          </Row>
       <Button
         style={{ width: 120, marginBottom: 10, marginLeft: 10, marginTop: 10 }}
         onClick={handleAddBookClick}

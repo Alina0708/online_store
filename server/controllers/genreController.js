@@ -1,6 +1,6 @@
-const { Genre } = require("../models/models");
+const { Genre, Books, OrderBooks, Order } = require("../models/models");
 const ApiError = require("../error/ApiError");
-const { Op } = require("sequelize");
+const { literal, Op } = require("sequelize");
 
 class GenreController {
   async create(req, res) {
@@ -41,20 +41,38 @@ class GenreController {
   async getGenreDescription(req, res) {
     const { name } = req.params;
 
-  try {
-    const genre = await Genre.findOne({ where: { name: { [Op.like]: `${name}%` } } });
+    try {
+      const genre = await Genre.findOne({
+        where: { name: { [Op.like]: `${name}%` } },
+      });
 
-    if (genre) {
-      const description = genre.description;
-      res.status(200).json(description); 
-    } else {
-      res.status(404).json({ message: "Genre not found" });
+      if (genre) {
+        const description = genre.description;
+        res.status(200).json(description);
+      } else {
+        res.status(404).json({ message: "Genre not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
+
+  async findMostOrderedGenres(req, res) {
+    try {
+      const genres = await Genre.findAll();
+      const booksCountByGenre = {};
+      for (const genre of genres) {
+        const booksCount = await Books.count({
+          where: { genreId: genre.id },
+        });
+        booksCountByGenre[genre.name] = booksCount;
+      }
+      res.status(200).json(booksCountByGenre);
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Failed to get books count by genre" });
+    }
   }
 }
-
 module.exports = new GenreController();
