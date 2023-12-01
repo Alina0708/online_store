@@ -1,4 +1,5 @@
-const { Books, Order, OrderBooks, User } = require("../models/models");
+const { Books, Order, OrderBooks, User, Status } = require("../models/models");
+const { Op } = require('sequelize');
 
 class OrderController {
   async getAllOrders(req, res) {
@@ -155,6 +156,145 @@ class OrderController {
       });
     }
   }
+
+  async getOrdersGroupedByUserStatus(req, res){
+    const desiredStatuses = [2, 3, 4, 5]; 
+
+  try {
+    const orders = await Order.findAll({
+      where: {
+      statusId: {
+        [Op.in]: desiredStatuses, 
+      },},
+      include: [
+        {
+          model: OrderBooks,
+          include: [{ model: Books }],
+        },
+        {
+          model: User,
+          attributes: ['id', 'email'],
+        },
+        {
+          model: Status, 
+          attributes: ['id', 'name'], 
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const ordersGroupedByUser = {};
+
+    orders.forEach((order) => {
+      const userId = order.user.id;
+
+      if (!ordersGroupedByUser[userId]) {
+        ordersGroupedByUser[userId] = {
+          user: {
+            id: order.user.id,
+            email: order.user.email,
+          },
+          orders: [],
+        };
+      }
+
+      const formattedOrder = {
+        orderId: order.id,
+        commonPrice: order.commonPrice,
+        updatedAt: order.updatedAt,
+        createdAt: order.createdAt,
+        status: order.status.name,
+        books: [],
+      };
+
+      order.orderBooks.forEach((orderBook) => {
+        formattedOrder.books.push({
+          bookId: orderBook.book.id,
+          image: orderBook.book.img,
+          count:orderBook.count
+        });
+      });
+
+      ordersGroupedByUser[userId].orders.push(formattedOrder);
+    });
+
+    return res.status(200).json(Object.values(ordersGroupedByUser));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Failed to fetch orders grouped by users' });
+  }
+
+  };
+
+
+  async getOrdersGroupedByUserStatusCompleted(req, res){
+    const desiredStatuses = [6]; 
+
+  try {
+    const orders = await Order.findAll({
+      where: {
+      statusId: {
+        [Op.in]: desiredStatuses, 
+      },},
+      include: [
+        {
+          model: OrderBooks,
+          include: [{ model: Books }],
+        },
+        {
+          model: User,
+          attributes: ['id', 'email'],
+        },
+        {
+          model: Status, 
+          attributes: ['id', 'name'], 
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const ordersGroupedByUser = {};
+
+    orders.forEach((order) => {
+      const userId = order.user.id;
+
+      if (!ordersGroupedByUser[userId]) {
+        ordersGroupedByUser[userId] = {
+          user: {
+            id: order.user.id,
+            email: order.user.email,
+          },
+          orders: [],
+        };
+      }
+
+      const formattedOrder = {
+        orderId: order.id,
+        commonPrice: order.commonPrice,
+        updatedAt: order.updatedAt,
+        createdAt: order.createdAt,
+        status: order.status.name,
+        books: [],
+      };
+
+      order.orderBooks.forEach((orderBook) => {
+        formattedOrder.books.push({
+          bookId: orderBook.book.id,
+          image: orderBook.book.img,
+          count:orderBook.count
+        });
+      });
+
+      ordersGroupedByUser[userId].orders.push(formattedOrder);
+    });
+
+    return res.status(200).json(Object.values(ordersGroupedByUser));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Failed to fetch orders grouped by users' });
+  }
+
+  };
 }
 
 module.exports = new OrderController();

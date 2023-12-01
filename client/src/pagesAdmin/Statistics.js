@@ -227,7 +227,7 @@ const Statistics = observer(() => {
   };
 
   const displayChart = (labels, data) => {
-    const ctx = document.getElementById('orderChart');
+    const ctx = document.getElementById('orderChart').getContext('2d');
 
     if (chartRef.current !== null) {
       chartRef.current.destroy();
@@ -260,7 +260,7 @@ const Statistics = observer(() => {
           formatter: (value, ctx) => {
             const total = ctx.chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
             const percentage = ((value / total) * 100).toFixed(2);
-            return `${percentage}%`;
+            return `Segment\n${percentage}%`;
           },
           color: '#fff',
           font: {

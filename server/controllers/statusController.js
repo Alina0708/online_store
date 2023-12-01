@@ -98,5 +98,60 @@ class StatusController {
         .json({ message: "Error updating order status", error: error.message });
     }
   }
+
+
+  async changeOrderStatus(req, res) {
+    const { orderId, statusName } = req.body;
+
+    try {
+      // Находим заказ по orderId
+      const order = await Order.findOne({
+        where: {
+          id: orderId,
+        },
+      });
+  
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      // Находим статус по имени statusName
+      const status = await Status.findOne({
+        where: {
+          name: statusName,
+        },
+      });
+  
+      if (!status) {
+        return res.status(404).json({ message: 'Status not found' });
+      }
+  
+      // Обновляем заказ на новый статус
+      await order.setStatus(status);
+  
+      // После обновления получаем обновленный заказ с новым статусом
+      const updatedOrder = await Order.findOne({
+        where: {
+          id: orderId,
+        },
+        include: [
+          {
+            model: Status,
+            attributes: ['name'],
+          },
+        ],
+      });
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Updated order not found' });
+      }
+  
+      const updatedStatus = updatedOrder.status.name;
+  
+      res.status(200).json({ status: updatedStatus });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating order status', error: error.message });
+    }
+  }
 }
 module.exports = new StatusController();

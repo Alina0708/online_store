@@ -223,6 +223,25 @@ export const getOrders = async () => {
   }
 };
 
+export const getUserOrdersSatatus = async () => {
+  try {
+    const { data } = await $authHost.get("api/order/groupuser/");
+    return data;
+  } catch (e) {
+    console.log("error");
+  }
+};
+
+export const getUserOrdersSatatusCompleted = async () => {
+  try {
+    const { data } = await $authHost.get("api/order/groupuser/completed/");
+    return data;
+  } catch (e) {
+    console.log("error");
+  }
+};
+
+
 export const createOrder = async ({ userId, commonPrice }) => {
   try {
     const { data } = await $host.post("api/order/", { userId, commonPrice });
@@ -295,6 +314,11 @@ export const deleteBasketBookByUser = async ({ basketId }) => {
 };
 
 //status
+export const getAllStatus = async () => {
+  const { data } = await $authHost.get("api/status/",);
+  return data;
+};
+
 export const getStatusNameById = async ({ id }) => {
   try {
     const { data } = await $host.get(`api/status/name/${id}`);
@@ -308,6 +332,16 @@ export const getStatusNameById = async ({ id }) => {
 export const changeOrderStatusOnPaid = async ({ orderId }) => {
   try {
     const { data } = await $host.put("api/status/paid/", { orderId });
+    return data;
+  } catch (error) {
+    console.error("error" + error);
+    throw new Error("Failed status paid");
+  }
+};
+
+export const changeOrderStatus = async ({ orderId, statusName }) => {
+  try {
+    const { data } = await $host.put("api/status/change/", { orderId, statusName });
     return data;
   } catch (error) {
     console.error("error" + error);

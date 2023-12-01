@@ -7,6 +7,8 @@ const orderController = require("../controllers/orderController")
 
 router.post('/orderbook/', orderController.createOrderBook)
 router.get('/orderbook/', orderController.getAllOrderBooks)
+router.get('/groupuser/', checkRole('admin'), orderController.getOrdersGroupedByUserStatus)
+router.get('/groupuser/completed/', checkRole('admin'), orderController.getOrdersGroupedByUserStatusCompleted)
 router.get('/orderbook/:id', orderController.getOrderBookByUserId)
 router.get('/orderbook/history/:id', orderController.getHistoryOrders)
 router.delete('/orderbook/delete/', orderController.deleteOrderBooksByOrderId)

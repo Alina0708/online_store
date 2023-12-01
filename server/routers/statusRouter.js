@@ -9,6 +9,7 @@ router.get('/', checkRole('admin'), statusController.getAllStatus)
 router.get('/name/:id', statusController.getStatusNameById)
 router.delete('/:id', checkRole('admin'), statusController.deleteStatusName)
 router.put('/paid/', statusController.changeOrderStatusOnPaid)
+router.put('/change/', statusController.changeOrderStatus)
 
 
 module.exports = router
