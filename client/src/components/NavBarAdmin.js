@@ -22,10 +22,13 @@ const NavBarAdmin = observer(() =>{
         <a className="nav-link" href="/controlbook">Control book</a>
       </li> 
       <li className="nav-item" style={{color: 'white'}}>
-        <a className="nav-link" href="/statistics">Statistics</a>
+        <a className="nav-link" href="/orders">Order</a>
       </li>
       <li className="nav-item" style={{color: 'white'}}>
-        <a className="nav-link" href="/orders">Order</a>
+        <a className="nav-link" href="/comments">Comments</a>
+      </li>
+      <li className="nav-item" style={{color: 'white'}}>
+        <a className="nav-link" href="/statistics">Statistics</a>
       </li>
     </ul>
     

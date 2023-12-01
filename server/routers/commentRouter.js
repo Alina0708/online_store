@@ -7,5 +7,6 @@ router.get('/', commentController.getAll)
 router.get('/comment/:bookId', commentController.getCommentsBook)
 router.delete('/:id', checkRole('admin'), commentController.deleteComment)
 router.post('/', commentController.createComments)
+router.get('/books/', checkRole('admin'),commentController.getAllCommentsBooks)
 
 module.exports = router

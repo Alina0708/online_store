@@ -77,6 +77,31 @@ class CommentController {
       res.status(500).json({ error: "error" });
     }
   }
+
+  async getAllCommentsBooks(req, res){
+    try {
+      const commentsByBook = await Books.findAll({
+        include: {
+          model: Comments,
+          attributes: ['id', 'comment'],
+        },
+      });
+  
+      const commentsGroupedByBook = {};
+  
+      commentsByBook.forEach((book) => {
+        commentsGroupedByBook[book.name, book.img] = book.comments.map((comment) => ({
+          id: comment.id,
+          comment: comment.comment,
+        }));
+      });
+  
+      return res.status(200).json(commentsGroupedByBook);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Failed to fetch comments grouped by book' });
+    }
+  }
 }
 
 module.exports = new CommentController();

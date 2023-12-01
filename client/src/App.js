@@ -17,6 +17,7 @@ import { Spinner } from 'react-bootstrap';
 import {check} from "./http/UserAPI";
 import Contacts from './pages/Contacts';
 import Userorder from './pages/userOrders';
+import ControlComments from './pagesAdmin/ControlComments';
 
 
 const App = observer (() =>{
@@ -56,6 +57,7 @@ if (loading) {
                 <Route path="/controlbook" element={<ControlBooks />} />
                 <Route path="/statistics" element={<Statistics />} />
                 <Route path="/orders" element={<Order />} />
+                <Route path="/comments" element={<ControlComments />} />
               </Route>
             )}
             <Route path="/shop" element={<Shop />} />

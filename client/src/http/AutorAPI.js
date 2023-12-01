@@ -112,6 +112,11 @@ export const getCommentsBook = async (bookId) => {
   return data;
 };
 
+export const getAllCommentsBook = async () => {
+  const { data } = await $authHost.get("api/comments/books/");
+  return data;
+};
+
 export const createComments = async ({ comment, userId, bookId }) => {
   try {
     const { data } = await $host.post("api/comments/", {
@@ -119,6 +124,16 @@ export const createComments = async ({ comment, userId, bookId }) => {
       userId,
       bookId,
     });
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to add comment");
+  }
+};
+
+export const deleteComment = async (id) => {
+  try {
+    const { data } = await $authHost.delete(`api/comments/${id}`,);
     return data;
   } catch (error) {
     console.error(error);
