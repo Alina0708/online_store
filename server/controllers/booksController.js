@@ -123,13 +123,13 @@ class BooksController {
       const { bookOrAuthor } = req.body;
 
       if(bookOrAuthor === " " || !bookOrAuthor){
-        return res.status(200).json({ books: [] });
+        return res.status(200).json({ booksOrAuthor: [] });
       }
  
       const booksByName = await Books.findAll({
         where: {
           name: {
-            [Op.like]: `%${bookOrAuthor}%`,
+            [Op.iLike]: `%${bookOrAuthor}%`,
           },
         },
       });
@@ -137,7 +137,7 @@ class BooksController {
       const author = await AUTORS.findAll({
         where: {
           last_name: {
-            [Op.like]: `%${bookOrAuthor}%`,
+            [Op.iLike]: `%${bookOrAuthor}%`,
           },
         },
       });

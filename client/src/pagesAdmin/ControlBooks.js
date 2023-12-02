@@ -4,6 +4,7 @@ import ControlAutors from "../components/Admin/ControlAutors";
 import { observer } from "mobx-react-lite";
 import ControlGenre from "../components/Admin/ControlGenre";
 import Control from "../components/Admin/Control"
+import "../CSS/ControlBookTable.css";
 
 const ControlBooks = observer(() => {
   return (

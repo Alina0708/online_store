@@ -27,7 +27,7 @@ const ControlComments = observer(() => {
   return (
     <Container>
       <h2>Comments</h2>
-      <Table striped bordered hover>
+      <Table bordered>
         <thead>
           <tr>
             <th>Image</th>
@@ -49,8 +49,10 @@ const ControlComments = observer(() => {
                   <tbody>
                     {commentsArray.map((comment) => (
                       <tr
+                      className="custom-table-row"
                         key={comment.id}
                         onDoubleClick={() => handleDeleteComment(comment.id)}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = "inherit"}
                       >
                         <td>{comment.id}</td>
                         <td>{comment.comment}</td>

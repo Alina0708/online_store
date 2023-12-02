@@ -77,7 +77,7 @@ const Contacts = observer(() => {
               />
             </Form.Group>
 
-            <Button type="submit">Send Message</Button>
+            <Button type="submit" style={{marginTop:25, marginLeft: 1100, width:200}}>Send Message</Button>
           </Form>
         </Col>
       </Row>

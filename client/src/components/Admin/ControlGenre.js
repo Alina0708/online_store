@@ -24,6 +24,7 @@ const ControlGenre = observer(() => {
     if (confirmDelete && id) {
       deleteGenre({ id }).then((data) => {
         window.alert("Delete " + data);
+        getGenre().then((data) => setGenres(data));
       });
     }
   };

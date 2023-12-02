@@ -374,6 +374,23 @@ export const findBooksByAuthorOrName = async ({ bookOrAuthor }) => {
   }
 };
 
+export const getBooksFind = async ({ bookOrAuthor }) => {
+  try {
+    let data;
+    if (bookOrAuthor) {
+      console.log("search", {bookOrAuthor})
+      data = await findBooksByAuthorOrName({ bookOrAuthor });
+      
+    } else {
+      data = await getBooks();
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching books or searching:", error);
+    throw error;
+  }
+};
+
 //rate
 export const createRate = async ({ rate, userId, bookId }) => {
   try {

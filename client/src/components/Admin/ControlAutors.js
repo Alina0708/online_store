@@ -30,6 +30,7 @@ const ControlAutors = observer(() => {
     if (confirmDelete) {
       deleteAutors({ id }).then((data) => {
         window.alert("delete");
+        getAutors().then((data) => setAutors(data));
       });
     }
   };

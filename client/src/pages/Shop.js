@@ -21,9 +21,11 @@ const Shop = observer(() => {
   }, [books]);
   
   const handleSearch = (searchQueryValue) => {
+    if(searchQueryValue !== " " && searchQueryValue !== ""){
     findBooksByAuthorOrName({ bookOrAuthor: searchQueryValue }).then((data) => {
       setSearchBook(data.books);
     });
+  }
   };
 
   return (

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { createGenre } from "../../http/AutorAPI";
+import { createGenre, getGenre } from "../../http/AutorAPI";
 
 const AddGenreModal = ({ show, onHide }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [genre, setGenres] = useState();
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -22,6 +23,7 @@ const AddGenreModal = ({ show, onHide }) => {
       createGenre( name, description );
       setName("");
       setDescription("");
+      getGenre().then((data) => setGenres(data));
       onHide();
     }
   };

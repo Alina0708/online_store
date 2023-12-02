@@ -83,18 +83,17 @@ const Userorder = observer(() => {
   };
 
   const deleteOrderandOrderBook = ({ orderId }) => {
-    delOrderAndOrderBooks({ orderId });
-    if ({ userId }) {
+      delOrderAndOrderBooks({ orderId });
       getOrderBookByUserId({ userId: userId }).then((orderBook) => {
         setOrderBook(orderBook);
       });
-    }
   };
 
   const handlePayment = ({ orderId }) => {
     console.log({ orderId });
     if ({ orderId }) {
-      changeOrderStatusOnPaid({ orderId });
+      const lol = changeOrderStatusOnPaid({ orderId });
+      console.log("lol", {lol})
     }
 
     setShowModal(false);
@@ -198,6 +197,7 @@ const Userorder = observer(() => {
                     <Image
                       width={120}
                       height={200}
+                      style={{ opacity: 0.7 }}
                       src={"http://localhost:5000/" + books.book.img}
                       alt={books.book.name}
                     />
