@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Col, Container, Row, Form } from "react-bootstrap";
+import { Col, Container, Row, Form, Carousel } from "react-bootstrap";
 import GenreBar from "../components/GenreBar";
 import BooksList from "../components/BooksList";
 import { Context } from "../index";
@@ -8,6 +8,7 @@ import { getAutors, getBooks, getGenre } from "../http/AutorAPI";
 import Slider from "../components/Slider";
 import { findBooksByAuthorOrName } from "../http/AutorAPI";
 import BookCard from "../components/BookCard";
+import "../CSS/pageShop.css"
 
 const Shop = observer(() => {
   const { books } = useContext(Context);
@@ -21,12 +22,18 @@ const Shop = observer(() => {
   }, [books]);
   
   const handleSearch = (searchQueryValue) => {
+    console.log("lol", searchQueryValue)
     if(searchQueryValue !== " " && searchQueryValue !== ""){
     findBooksByAuthorOrName({ bookOrAuthor: searchQueryValue }).then((data) => {
       setSearchBook(data.books);
     });
   }
   };
+  const filteredBooks = books.books.filter((book) => {
+    const createdDate = new Date(book.createdAt);
+    const currentDate = new Date();
+    const oneWeekAgo = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return createdDate > oneWeekAgo;});
 
   return (
     <Container>
@@ -53,6 +60,26 @@ const Shop = observer(() => {
           <Row>
             <Slider />
           </Row>
+          
+          <Row className="carousel-row" style={{marginTop:10}}>
+            <div className="carousel-wrapper">
+              <p>New books</p>
+              <Carousel indicators={false} interval={null} style={{ height: "400px", overflow: "hidden"}}>
+                {[...Array(Math.ceil(filteredBooks.length / 4))].map((_, index) => (
+                  <Carousel.Item key={index}>
+                    <Row>
+                      {filteredBooks.slice(index * 4, index * 4 + 4).map((book) => (
+                        <Col key={book.id} md={3}>
+                          <BookCard bookitem={book} />
+                        </Col>
+                      ))}
+                    </Row>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </div>
+          </Row>
+
           {searchBook.length === 0 && searchQuery !== "" && (
             <p
               style={{

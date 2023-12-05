@@ -1,0 +1,28 @@
+.carousel-row {
+    position: relative;
+  }
+  
+  .carousel-wrapper {
+    border: 1px solid #ccc;
+    position: relative;
+  }
+  .carousel-wrapper p{
+    margin-bottom: 0px!important;
+  }
+  
+  .carousel-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    border-radius: 50%;
+    background-color: gray;
+    color: white;
+    padding: 5px;
+    margin: 0 5px;
+  }
+  
+  
