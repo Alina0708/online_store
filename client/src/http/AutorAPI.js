@@ -238,6 +238,24 @@ export const getOrders = async () => {
   }
 };
 
+export const getPopularBookInOrders = async () => {
+  try {
+    const { data } = await $host.put("api/order/popular");
+    return data;
+  } catch (e) {
+    console.log("error");
+  }
+};
+
+export const getNeBook = async () => {
+  try {
+    const { data } = await $host.put("api/order/");
+    return data;
+  } catch (e) {
+    console.log("error");
+  }
+};
+
 export const getUserOrdersSatatus = async () => {
   try {
     const { data } = await $authHost.get("api/order/groupuser/");

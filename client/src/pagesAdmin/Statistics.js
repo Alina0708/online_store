@@ -1,25 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { getBooks, getOrderBook, getOrders, getGenreCount } from "../http/AutorAPI";
+import {
+  getBooks,
+  getPopularBookInOrders,
+  getOrders,
+  getGenreCount,
+} from "../http/AutorAPI";
 import { Container, Row, Col } from "react-bootstrap";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import Chart from "chart.js/auto";
 import "../CSS/CircularProgressWithText.css";
-import 'chartjs-plugin-datalabels';
+import "chartjs-plugin-datalabels";
 
 const Statistics = observer(() => {
   const [books, setBooks] = useState([]);
   const [bookOrders, setOrderData] = useState([]);
   const [orderData, setOrder] = useState([]);
-  const [booksCount, setBooksCount] = useState([])
+  const [booksCount, setBooksCount] = useState([]);
 
   useEffect(() => {
     getBooks().then((data) => setBooks(data));
-    getOrderBook().then((data) => setOrderData(data));
+    getPopularBookInOrders().then((data) => setOrderData(data));
     getOrders().then((data) => setOrder(data));
-    getGenreCount().then((data)=> setBooksCount(data));
+    getGenreCount().then((data) => setBooksCount(data));
   }, []);
-  console.log("booksCount", orderData)
+  //console.log("booksCount", orderData)
+  console.log("bookOrders", bookOrders);
 
   //1
   const totalBooks = books.length;
@@ -81,23 +87,15 @@ const Statistics = observer(() => {
   useEffect(() => {
     try {
       if (bookOrders.length > 0) {
-        const booksCountMap = new Map();
-        bookOrders.forEach((order) => {
-          const { bookId, count } = order;
-          if (booksCountMap.has(bookId)) {
-            booksCountMap.set(bookId, booksCountMap.get(bookId) + count);
-          } else {
-            booksCountMap.set(bookId, count);
-          }
-        });
-        const sortedBooks = [...booksCountMap.entries()].sort(
-          (a, b) => b[1] - a[1]
-        );
+        const bookData = bookOrders.map((order) => ({
+          name: order.name,
+          rating: order.rating,
+        }));
 
-        const topBooks = sortedBooks.slice(0, 5);
+        const sortedBooks = bookData.sort((a, b) => b.rating - a.rating);
 
-        const labels = topBooks.map(([bookId]) => `Book ${bookId}`);
-        const dataValues = topBooks.map(([_, count]) => count);
+        const labels = sortedBooks.map((book) => book.name);
+        const dataValues = sortedBooks.map((book) => book.rating);
 
         const ctx = document.getElementById("books-orders-chart");
         if (ctx) {
@@ -107,7 +105,7 @@ const Statistics = observer(() => {
               labels: labels,
               datasets: [
                 {
-                  label: "Orders Count",
+                  label: "Book rate",
                   data: dataValues,
                   backgroundColor: "rgba(221, 160, 221, 0.2)",
                   borderColor: "rgba(221, 160, 221, 1)",
@@ -204,10 +202,18 @@ const Statistics = observer(() => {
   const chartRef = useRef(null);
 
   const calculatePercentageByDay = () => {
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const ordersPerDay = {};
 
-    orderData.forEach(order => {
+    orderData.forEach((order) => {
       const orderDate = new Date(order.createdAt);
       const dayOfWeek = daysOfWeek[orderDate.getDay()];
 
@@ -221,57 +227,62 @@ const Statistics = observer(() => {
     const totalOrders = orderData.length;
 
     const dataLabels = Object.keys(ordersPerDay);
-    const dataValues = dataLabels.map(day => ((ordersPerDay[day] / totalOrders) * 100).toFixed(2));
+    const dataValues = dataLabels.map((day) =>
+      ((ordersPerDay[day] / totalOrders) * 100).toFixed(2)
+    );
 
     displayChart(dataLabels, dataValues);
   };
 
   const displayChart = (labels, data) => {
-    const ctx = document.getElementById('orderChart').getContext('2d');
+    const ctx = document.getElementById("orderChart").getContext("2d");
 
     if (chartRef.current !== null) {
       chartRef.current.destroy();
     }
 
     chartRef.current = new Chart(ctx, {
-      type: 'doughnut',
+      type: "doughnut",
       data: {
         labels: labels,
         datasets: [
           {
-            label: 'Order Percentage by Day',
+            label: "Order Percentage by Day",
             data: data,
             backgroundColor: [
-              '#aee5b0', //green -
-              '#f6f79e',//red  -
-              '#afd8db',//blue -
-              '#bf8ab6', //pink -
-              '#f79eda', //orange
-              '#eda1b3',
-              '#848aa1'
+              "#aee5b0", //green -
+              "#f6f79e", //red  -
+              "#afd8db", //blue -
+              "#bf8ab6", //pink -
+              "#f79eda", //orange
+              "#eda1b3",
+              "#848aa1",
             ],
-            borderWidth: 1
-          }
-        ]
+            borderWidth: 1,
+          },
+        ],
       },
-       options: {
-      plugins: {
-        datalabels: {
-          formatter: (value, ctx) => {
-            const total = ctx.chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
-            const percentage = ((value / total) * 100).toFixed(2);
-            return `Segment\n${percentage}%`;
+      options: {
+        plugins: {
+          datalabels: {
+            formatter: (value, ctx) => {
+              const total = ctx.chart.data.datasets[0].data.reduce(
+                (acc, val) => acc + val,
+                0
+              );
+              const percentage = ((value / total) * 100).toFixed(2);
+              return `Segment\n${percentage}%`;
+            },
+            color: "#fff",
+            font: {
+              weight: "bold",
+            },
+            display: true,
           },
-          color: '#fff',
-          font: {
-            weight: 'bold'
-          },
-          display: true
-        }
-      }
-    }
-  });
-};
+        },
+      },
+    });
+  };
   useEffect(() => {
     if (orderData.length > 0) {
       calculatePercentageByDay();
@@ -351,8 +362,11 @@ const Statistics = observer(() => {
             border: "solid #D3D3D3 1px",
             margin: 10,
           }}
-        > <p>Order Percentage by Day</p>
-        <canvas id="orderChart" width="500" height="400"></canvas></Col>
+        >
+          {" "}
+          <p>Order Percentage by Day</p>
+          <canvas id="orderChart" width="500" height="400"></canvas>
+        </Col>
         <Col
           md={2}
           style={{
@@ -361,12 +375,13 @@ const Statistics = observer(() => {
           }}
         >
           <p>Number of books of each genre</p>
-           {booksCount && Object.keys(booksCount).map((genre) => (
-        <Row key={genre}>
-          <Col style={{fontSize:14}}>{genre}</Col>
-          <Col style={{ textAlign: 'right' }}>{booksCount[genre]}</Col>
-        </Row>
-      ))}
+          {booksCount &&
+            Object.keys(booksCount).map((genre) => (
+              <Row key={genre}>
+                <Col style={{ fontSize: 14 }}>{genre}</Col>
+                <Col style={{ textAlign: "right" }}>{booksCount[genre]}</Col>
+              </Row>
+            ))}
         </Col>
       </Row>
     </Container>

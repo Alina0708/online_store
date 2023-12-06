@@ -1,28 +1,46 @@
 .carousel-row {
-    position: relative;
-  }
-  
-  .carousel-wrapper {
-    border: 1px solid #ccc;
-    position: relative;
-  }
-  .carousel-wrapper p{
-    margin-bottom: 0px!important;
-  }
-  
-  .carousel-controls {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    border-radius: 50%;
-    background-color: gray;
-    color: white;
-    padding: 5px;
-    margin: 0 5px;
-  }
-  
-  
+  position: relative;
+}
+
+.carousel-wrapper {
+  /* border: 1px solid #ccc; */
+  position: relative;
+}
+.carousel-wrapper p {
+  margin-bottom: 0px !important;
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  border-radius: 50%;
+  background-color: rgb(3, 3, 3);
+  color: white;
+  padding: 5px;
+  margin: px;
+}
+
+.bestseller {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  background-color: purple;
+  color: white;
+  padding: 4px 8px;
+  z-index: 999;
+}
+
+.NewReleases{
+  position: absolute;
+  left: 0px;
+  top: 270px;
+  background-color: rgb(85, 216, 107);
+  color: white;
+  padding: 4px 8px;
+  z-index: 999;
+}

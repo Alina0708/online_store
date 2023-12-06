@@ -14,11 +14,13 @@ const Shop = observer(() => {
   const { books } = useContext(Context);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchBook, setSearchBook] = useState([]);
+  // const [popularBook, setPopularBook] = useState();
 
   useEffect(() => {
     getBooks().then((data) => books.setBooks(data));
     getGenre().then((data) => books.setGenre(data));
     getAutors().then((data) => books.setAutors(data));
+    // getPopularBookInOrders().then((data) => setPopularBook(data))
   }, [books]);
   
   const handleSearch = (searchQueryValue) => {
@@ -27,6 +29,8 @@ const Shop = observer(() => {
     findBooksByAuthorOrName({ bookOrAuthor: searchQueryValue }).then((data) => {
       setSearchBook(data.books);
     });
+  }else {
+    setSearchBook([]);
   }
   };
   const filteredBooks = books.books.filter((book) => {
@@ -61,10 +65,11 @@ const Shop = observer(() => {
             <Slider />
           </Row>
           
+          {(searchBook.length === 0 && searchQuery === "") && books.books?.length > 0 &&
           <Row className="carousel-row" style={{marginTop:10}}>
             <div className="carousel-wrapper">
-              <p>New books</p>
-              <Carousel indicators={false} interval={null} style={{ height: "400px", overflow: "hidden"}}>
+              <h4>New books</h4>
+              <Carousel indicators={false} interval={null} style={{ height: "405px", overflow: "hidden"}}>
                 {[...Array(Math.ceil(filteredBooks.length / 4))].map((_, index) => (
                   <Carousel.Item key={index}>
                     <Row>
@@ -78,7 +83,30 @@ const Shop = observer(() => {
                 ))}
               </Carousel>
             </div>
-          </Row>
+          </Row>}
+
+          {/* {popularBook?.length > 0 &&
+          <Row className="carousel-row" style={{marginTop:10}}>
+            <div className="carousel-wrapper">
+              <h4>Bestseller</h4>
+              <Carousel indicators={false} interval={null} style={{ height: "405px", overflow: "hidden"}}>
+                {[...Array(Math.ceil(popularBook.length / 4))].map((_, index) => (
+                  <Carousel.Item key={index}>
+                    <Row>
+                      {popularBook.slice(index * 4, index * 4 + 4).map((book) => (
+                        <Col key={book.id} md={3}>
+                          <BookCard bookitem={book} />
+                        </Col>
+                      ))}
+                    </Row>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </div>
+          </Row>} */}
+
+
+          {(searchBook.length === 0 && searchQuery === "") && books.books?.length > 0 &&<p>Shop</p>}
 
           {searchBook.length === 0 && searchQuery !== "" && (
             <p

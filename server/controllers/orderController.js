@@ -1,5 +1,5 @@
 const { Books, Order, OrderBooks, User, Status } = require("../models/models");
-const { Op } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 
 class OrderController {
   async getAllOrders(req, res) {
@@ -295,6 +295,54 @@ class OrderController {
   }
 
   };
+
+  async getPopularBookInOrders(req, res){
+    try {
+      const popularBooks = await OrderBooks.findAll({
+        attributes: ['bookId', [fn('COUNT', 'bookId'), 'count']],
+        group: ['bookId'],
+        order: [[literal('count'), 'DESC']],
+        limit: 5,
+      });
+  
+      const bookIds = popularBooks.map((book) => book.bookId);
+  
+      const topBooks = await Books.findAll({
+        where: {
+          id: {
+            [Op.in]: bookIds,
+          },
+        },
+      });
+  
+      res.json(topBooks);
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+
+  async getnewBook(req, res){
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+      const newBooks = await Books.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [sevenDaysAgo, new Date()] // Fetch books created in the last 7 days
+          }
+        }
+      });
+  
+      // Отправить новые книги в качестве ответа
+      res.json(newBooks);
+    } catch (error) {
+      // Обработка ошибок
+      console.error('Ошибка:', error);
+      res.status(500).send('Внутренняя ошибка сервера');
+    }
+  }
 }
 
 module.exports = new OrderController();
