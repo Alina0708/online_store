@@ -31,6 +31,9 @@ class UserController {
 
   async login(req, res) {
     const { email, password } = req.body;
+    if(!email || !password ){
+      return res.status(404).json({ message: "Некорректные данные" });
+    }else{
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
@@ -42,7 +45,7 @@ class UserController {
     }
 
     const token = generateJwt(user.id, user.email, user.role);
-    return res.json({ token });
+    return res.json({ token });}
   }
 
   async check(req, res) {

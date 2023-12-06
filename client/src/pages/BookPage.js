@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import star from "../image/pngwing.com.png";
@@ -15,6 +15,7 @@ import {
   getRateByUser
 } from "../http/AutorAPI";
 import { check } from "../http/UserAPI";
+import { Context } from "../index";
 
 const BookPage = () => {
   const [books, setBooks] = useState({ info: [] });
@@ -27,6 +28,8 @@ const BookPage = () => {
   const [rating, setRating] = useState(0);
 const [rate, setRate] = useState();
 
+const { isAuth } = useContext(Context);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,16 +39,18 @@ const [rate, setRate] = useState();
         const genreDescription = await getGenreDescription({name:bookData.genre});
         setDescriptionGenre(genreDescription);
 
+        if(isAuth.isAuth){
         const userData = await check();
         setUser(userData.id);
-
-        const showComment = await getCommentsBook(id);
-        setShowComment(showComment.comments);
-        
         if(userId && id)
         { 
         getRateByUser({ userId, bookId: parseInt(id, 10) }).then(data => {setRate(data.rate);});
         }
+      }
+
+        const showComment = await getCommentsBook(id);
+        setShowComment(showComment.comments);
+        
       } catch (error) {
         console.error(error);
       }
@@ -128,7 +133,7 @@ const [rate, setRate] = useState();
               <p>{books.rating}</p>
               <Image src={star} width={20} height={20} />
               </div>
-              <div style={{display:"flex", alignItems:"center", marginLeft: 140}}> {renderStars()}</div>
+             {isAuth.isAuth  && <div style={{display:"flex", alignItems:"center", marginLeft: 140}}> {renderStars()}</div>}
             </div>
           </Row>
         </Col>
@@ -146,6 +151,7 @@ const [rate, setRate] = useState();
             <p>*{descriptionGenre}</p>
           </div>
         </Col>
+        {isAuth.isAuth  && 
         <Col md={3}>
           <div style={{ border: "1px solid black", padding: 20 }}>
             <div className="d-flex">
@@ -158,11 +164,12 @@ const [rate, setRate] = useState();
               </Button>
             </div>
           </div>
-        </Col>
+        </Col>}
       </Row>
 
       <Row>
-        <h3 className="d-flex align-item-center mt-1">Comments</h3>
+      {isAuth.isAuth  && <h3 className="d-flex align-item-center mt-1">Comments</h3>}
+        {isAuth.isAuth  && 
         <div>
           <input
             type="text"
@@ -183,7 +190,7 @@ const [rate, setRate] = useState();
           >
             Send
           </Button>
-        </div>
+        </div>}
 
         <div style={{ marginTop: 70 }}>
           {showComments &&

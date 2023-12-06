@@ -4,28 +4,25 @@ import { observer } from "mobx-react-lite";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 import basketImg from "../image/basketImg.com.png";
-import exitImage from "../image/320140.png";
+import exitImage from "../image/profile.png";
 import { useLocation } from "react-router-dom";
-import { authorization } from "../http/UserAPI";
 import '../CSS/navMenu.css'
 
 
-const NavBar = observer(() => {
+const NavMenu = observer(() => {
   const { isAuth } = useContext(Context);
   const history = useNavigate();
   const location = useLocation();
   const exit = async () => {
-    authorization("guest@gmail.com", "guest");
-    isAuth.setIsAuth(false);
-    history("/shop");
+    history("/autorization");
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Container>
-        <a className="navbar-brand" href="/shop">
+      {!isAuth.isAuth && !isAuth.isAdmin && <a className="navbar-brand" href="/shop">
           BookShop
-        </a>
+        </a>}
         {isAuth.isAuth ? (
           <ul className="navbar-nav">
             <li className={`nav-item ${location.pathname === "/shop" ? 'active' : ''}`}>
@@ -33,30 +30,13 @@ const NavBar = observer(() => {
                 Home
               </a>
             </li>
-            <li className={`nav-item ${location.pathname === "/userorders" ? 'active' : ''}`} >
-              <a className="nav-link" href="/userorders">
-                Orders
-              </a>
-            </li>
-            <li className={`nav-item ${location.pathname === "/messageForAdmin" ? 'active' : ''}`} >
-              <a className="nav-link" href="/messageForAdmin">
-                Contacts
-              </a>
-            </li>
           </ul>
         ) : (
           <div></div>
         )}
-        {isAuth.isAuth ? (
+        {!isAuth.isAuth && !isAuth.isAdmin ? (
           <div>
-            <a href="/basket">
-              <img
-                style={{ height: 40, marginRight: 20 }}
-                src={basketImg}
-                alt="basket"
-              />
-            </a>
-            <img
+             <img
                 style={{ height: 30, marginRight: 20 }}
                 src={exitImage}
                 alt="exit"
@@ -72,4 +52,4 @@ const NavBar = observer(() => {
   );
 });
 
-export default NavBar;
+export default NavMenu;

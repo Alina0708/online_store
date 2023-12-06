@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container"
 import {useNavigate} from "react-router-dom";
 import exitImage from "../image/320140.png";
 import { useLocation } from "react-router-dom";
+import { authorization } from "../http/UserAPI";
 import '../CSS/navMenu.css'
 
 const NavBarAdmin = observer(() =>{
@@ -12,9 +13,10 @@ const NavBarAdmin = observer(() =>{
     const location = useLocation();
     const history = useNavigate();
     const exit = async() =>{
+      authorization("guest@gmail.com", "guest");
       isAuth.setIsAuth(false);
       isAuth.setIsAdmin(false);
-      history("/");
+      history("/shop");
       }
     return(
      
