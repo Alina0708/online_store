@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { createBook } from '../../http/AutorAPI';
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import { createBook, getGenre, getAutors } from "../../http/AutorAPI";
 
 const AddBookModal = ({ show, onHide }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    autorId: '',
-    description: '',
-    price: '',
-    genreId: '',
+    name: "",
+    autorId: "",
+    description: "",
+    price: "",
+    genreId: "",
     img: null,
   });
+  const [autors, setAutors] = useState([]);
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    getAutors().then((data) => setAutors(data));
+    getGenre().then((data) => setGenres(data));
+  }, [autors?.length, genres?.length]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,22 +39,29 @@ const AddBookModal = ({ show, onHide }) => {
     const { name, autorId, description, price, genreId, img } = formData;
 
     if (!name || !autorId || !description || !price || !genreId || !img) {
-      alert('Please fill in all fields');
+      alert("Please fill in all fields");
       return;
     }
 
-    if (isNaN(Number(autorId)) || isNaN(Number(price)) || Number(autorId) < 0 || Number(price) < 0) {
-      alert('Please enter valid numerical values for autorId and price (non-negative)');
+    if (
+      isNaN(Number(autorId)) ||
+      isNaN(Number(price)) ||
+      Number(autorId) < 0 ||
+      Number(price) < 0
+    ) {
+      alert(
+        "Please enter valid numerical values for autorId and price (non-negative)"
+      );
       return;
     }
 
     createBook(formData);
     setFormData({
-      name: '',
-      autorId: '',
-      description: '',
-      price: '',
-      genreId: '',
+      name: "",
+      autorId: "",
+      description: "",
+      price: "",
+      genreId: "",
       img: null,
     });
     onHide();
@@ -71,14 +85,20 @@ const AddBookModal = ({ show, onHide }) => {
             />
           </Form.Group>
           <Form.Group controlId="formAutorId">
-            <Form.Label>Autor ID:</Form.Label>
+            <Form.Label>Author:</Form.Label>
             <Form.Control
-              type="number"
-              placeholder="Enter autor ID"
+              as="select"
               name="autorId"
               value={formData.autorId}
               onChange={handleChange}
-            />
+            >
+              <option value="">Select author</option>
+              {autors.map((autor) => (
+                <option key={autor.id} value={autor.id}>
+                  {autor.id}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
           <Form.Group controlId="formDescription">
             <Form.Label>Description:</Form.Label>
@@ -99,21 +119,32 @@ const AddBookModal = ({ show, onHide }) => {
               name="price"
               value={formData.price}
               onChange={handleChange}
+              min="0"
             />
           </Form.Group>
           <Form.Group controlId="formGenreId">
-            <Form.Label>Genre ID:</Form.Label>
+            <Form.Label>Genre:</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Enter genre ID"
+              as="select"
               name="genreId"
               value={formData.genreId}
               onChange={handleChange}
-            />
+            >
+              <option value="">Select genre</option>
+              {genres.map((genre) => (
+                <option key={genre.id} value={genre.id}>
+                  {genre.id}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
           <Form.Group controlId="formImage">
             <Form.Label>Image:</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
           </Form.Group>
           <Button variant="primary" type="submit">
             Add

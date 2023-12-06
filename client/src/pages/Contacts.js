@@ -20,8 +20,20 @@ const Contacts = observer(() => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("fromDta" + formData.name + formData.email + formData.message)
-    sendMessage({nameUser:formData.name, email:formData.email, message:formData.message});
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (!formData.email.match(emailRegex)) {
+      alert('Please enter a valid email address (e.g., example@gmail.com)');
+      return;
+    }
+
+    const domain = formData.email.split('@')[1];
+    if (domain !== 'gmail.com') {
+      alert('Please use a Gmail address');
+      return;
+    }
+    sendMessage({ nameUser: formData.name, email: formData.email, message: formData.message });
+
     setFormData({
       name: '',
       email: '',
