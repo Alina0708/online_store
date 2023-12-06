@@ -87,7 +87,7 @@ const Basket = observer(() => {
         commonPrice: commonPrice.totalPrice,
       }).then((order) => {
         if ({ BasketBooks }) {
-            BasketBooks.forEach((basketUser) => {
+          BasketBooks.forEach((basketUser) => {
             console.log(order, basketUser.book.id, basketUser.count);
             createOrderBook({
               orderId: order,
@@ -96,9 +96,7 @@ const Basket = observer(() => {
             });
           });
 
-          
-            deleteBasketBookByUser({ basketId });
-        
+          deleteBasketBookByUser({ basketId });
         }
       });
     }
@@ -106,6 +104,13 @@ const Basket = observer(() => {
     getBasketBooksByUserId(userId).then((data) => {
       setBasketBooks(data.basketBooks);
     });
+  };
+
+  const [buttonClicked, setButtonClicked] = useState(false);
+
+  const handleOrderPlacement = () => {
+    setButtonClicked(true);
+    createOrders({ userId, commonPrice: { totalPrice } });
   };
 
   return (
@@ -186,11 +191,10 @@ const Basket = observer(() => {
               <Button
                 variant="outline-primary"
                 style={{ maxWidth: 285, minWidth: 240 }}
-                onClick={() => {
-                  createOrders({ userId, commonPrice: { totalPrice } });
-                }}
+                onClick={handleOrderPlacement}
+                disabled={buttonClicked} // Добавляем атрибут disabled, чтобы заблокировать кнопку
               >
-                Place an order
+                {buttonClicked ? "Order Placed" : "Place an order"}
               </Button>
               <p
                 id="successMessage"

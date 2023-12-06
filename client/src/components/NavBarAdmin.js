@@ -3,9 +3,13 @@ import { Context } from '../index';
 import {observer} from "mobx-react-lite";
 import Container from "react-bootstrap/Container"
 import {useNavigate} from "react-router-dom";
+import exitImage from "../image/320140.png";
+import { useLocation } from "react-router-dom";
+import '../CSS/navMenu.css'
 
 const NavBarAdmin = observer(() =>{
     const {isAuth} = useContext(Context);
+    const location = useLocation();
     const history = useNavigate();
     const exit = async() =>{
       isAuth.setIsAuth(false);
@@ -18,16 +22,16 @@ const NavBarAdmin = observer(() =>{
             <Container> 
        {isAuth.isAdmin ?
     <ul className="navbar-nav">
-      <li className="nav-item" style={{color: 'white'}}>
+      <li className={`nav-item ${location.pathname === "/controlbook" ? 'active' : ''}`}>
         <a className="nav-link" href="/controlbook">Control book</a>
       </li> 
-      <li className="nav-item" style={{color: 'white'}}>
+      <li className={`nav-item ${location.pathname === "/orders" ? 'active' : ''}`}>
         <a className="nav-link" href="/orders">Order</a>
       </li>
-      <li className="nav-item" style={{color: 'white'}}>
+      <li className={`nav-item ${location.pathname === "/comments" ? 'active' : ''}`}>
         <a className="nav-link" href="/comments">Comments</a>
       </li>
-      <li className="nav-item" style={{color: 'white'}}>
+      <li className={`nav-item ${location.pathname === "/statistics" ? 'active' : ''}`}>
         <a className="nav-link" href="/statistics">Statistics</a>
       </li>
     </ul>
@@ -36,7 +40,12 @@ const NavBarAdmin = observer(() =>{
     <div></div>   
 }
     <div>
-    <button variant={"outline-light"} onClick={exit}>Exit</button>
+    <img
+                style={{ height: 30, marginRight: 20 }}
+                src={exitImage}
+                alt="exit"
+                onClick={exit}
+              />
     </div>
 </Container>
 

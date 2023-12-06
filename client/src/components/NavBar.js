@@ -4,10 +4,15 @@ import { observer } from "mobx-react-lite";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 import basketImg from "../image/basketImg.com.png";
+import exitImage from "../image/320140.png";
+import { useLocation } from "react-router-dom";
+import '../CSS/navMenu.css'
+
 
 const NavBar = observer(() => {
   const { isAuth } = useContext(Context);
   const history = useNavigate();
+  const location = useLocation();
   const exit = async () => {
     isAuth.setIsAuth(false);
     history("/");
@@ -21,17 +26,17 @@ const NavBar = observer(() => {
         </a>
         {isAuth.isAuth ? (
           <ul className="navbar-nav">
-            <li className="nav-item" style={{ color: "white" }}>
+            <li className={`nav-item ${location.pathname === "/shop" ? 'active' : ''}`}>
               <a className="nav-link" href="/shop">
                 Home
               </a>
             </li>
-            <li className="nav-item" style={{ color: "white" }}>
+            <li className={`nav-item ${location.pathname === "/userorders" ? 'active' : ''}`} >
               <a className="nav-link" href="/userorders">
                 Orders
               </a>
             </li>
-            <li className="nav-item" style={{ color: "white" }}>
+            <li className={`nav-item ${location.pathname === "/messageForAdmin" ? 'active' : ''}`} >
               <a className="nav-link" href="/messageForAdmin">
                 Contacts
               </a>
@@ -49,9 +54,13 @@ const NavBar = observer(() => {
                 alt="basket"
               />
             </a>
-            <button variant={"outline-light"} onClick={exit}>
-              Exit
-            </button>
+            <img
+                style={{ height: 30, marginRight: 20 }}
+                src={exitImage}
+                alt="exit"
+                onClick={exit}
+              />
+
           </div>
         ) : (
           <div></div>

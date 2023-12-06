@@ -1,0 +1,7 @@
+.nav-item.active{
+    font-size: 18px;
+  }
+
+.active a{
+    color: rgb(141, 156, 210)!important;
+  }
