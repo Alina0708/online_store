@@ -185,6 +185,40 @@ class BooksController {
       res.status(500).json({ error: "Произошла ошибка при удалении book" });
     }
   }
+
+  async update(req, res) {
+  try {
+    const { id } = req.params; // Получаем ID книги для обновления
+    const { name, autorId, description, price, genreId } = req.body;
+
+    const book = await Books.findByPk(id); // Находим книгу по ID
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    if (req.files && req.files.img) {
+      const { img } = req.files;
+      let fileName = uuid.v4() + ".jpg";
+      img.mv(path.resolve(__dirname, "..", "static", fileName));
+      book.img = fileName; // Обновляем изображение книги
+    }
+
+    // Обновляем остальные данные книги
+    book.name = name;
+    book.autorId = autorId;
+    book.description = description;
+    book.price = price;
+    book.genreId = genreId;
+
+    await book.save(); // Сохраняем обновленные данные книги в базе данных
+
+    res.status(200).json(book);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 }
 
 module.exports = new BooksController();

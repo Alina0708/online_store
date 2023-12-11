@@ -96,6 +96,34 @@ export const createBook = async ({
   }
 };
 
+
+
+export const updateBook = async ({
+  id,
+  name,
+  autorId,
+  description,
+  price,
+  genreId,
+  img,
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("autorId", autorId);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("genreId", genreId);
+    formData.append("img", img);
+
+    const { data } = await $authHost.put(`api/books/update/${id}`, formData);
+    return data;
+  } catch (e) {
+    console.error("update book - error", e);
+    throw e;
+  }
+};
+
 export const deleteBook = async ({ id }) => {
   try {
     const { data } = await $authHost.delete(`api/books/${id}`);

@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { getBooksFind, deleteBook } from "../../http/AutorAPI";
 import "../../CSS/ControlBookTable.css";
 import AddBookModal from "../models/AddBookModal";
+import UpdateBookModal from "../models/UpdateBookModal";
 
 const Control = observer(() => {
   const [books, setBooks] = useState([]);
@@ -50,6 +51,25 @@ const Control = observer(() => {
     }
   };
 
+  //update
+  const [selectedBook, setSelectedBook] = useState();
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  const handleUpdateClick = (book) => {
+    setSelectedBook(book);
+    setShowUpdateModal(true);
+  };
+  // const handleUpdate = async (updatedBookData) => {
+  //   try {
+  //     //await updateBook(updatedBookData);
+  //     //const data = await getBooksFind({ bookOrAuthor: searchQuery });
+  //     //setBooks(data);
+  //   } catch (error) {
+  //     console.error("Failed to update book", error);
+  //   }
+  // };
+  
+
   return (
     <Container>
       <div style={{ marginBottom: 10 }}>Books</div>
@@ -82,6 +102,7 @@ const Control = observer(() => {
             <th>Genre</th>
             <th>Rate</th>
             <th>Price</th>
+            <th>Update</th>
           </tr>
         </thead>
         <tbody>
@@ -106,10 +127,21 @@ const Control = observer(() => {
               <td>{book.genreId}</td>
               <td>{book.rating}</td>
               <td>{book.price}</td>
+              <td>
+                  <Button className="updateButton" onClick={() => handleUpdateClick(book)} style={{color:"blue"}}>
+                    Update
+                  </Button>
+                </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <UpdateBookModal
+        show={showUpdateModal}
+        onHide={() => setShowUpdateModal(false)}
+        bookData={selectedBook}
+        setBooks={setBooks}
+      />
     </Container>
   );
 });

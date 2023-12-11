@@ -17,3 +17,8 @@
 .custom-table-row:hover {
     background-color: lightblue;
 }
+
+.updateButton{
+    color: blue;
+    background-color: white;
+}
