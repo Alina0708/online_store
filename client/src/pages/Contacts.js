@@ -26,12 +26,6 @@ const Contacts = observer(() => {
       alert('Please enter a valid email address (e.g., example@gmail.com)');
       return;
     }
-
-    const domain = formData.email.split('@')[1];
-    if (domain !== 'gmail.com') {
-      alert('Please use a Gmail address');
-      return;
-    }
     sendMessage({ nameUser: formData.name, email: formData.email, message: formData.message });
 
     setFormData({

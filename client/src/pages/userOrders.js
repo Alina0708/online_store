@@ -7,7 +7,7 @@ import {
   Image,
   Button,
   Modal,
-  Form,
+  Form 
 } from "react-bootstrap";
 import {
   getOrderBookByUserId,
@@ -24,9 +24,17 @@ const Userorder = observer(() => {
   const [historyOrders, setHistoryOrders] = useState([]);
   const [statuses, setStatuses] = useState({});
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const [cardNumber, setCardNumber] = useState("");
-  const [cvs, setCvs] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cvs, setCvs] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [validationErrors, setValidationErrors] = useState({
+    cardNumber: false,
+    cvs: false,
+    expiryDate: false,
+  });
+
+  console.log('statuses', statuses)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +73,7 @@ const Userorder = observer(() => {
           console.error(error);
         });
     }
-  }, [userId, orders]);
+  }, [userId, orders, statuses[orders]]);
 
   const calculateTotalCount = (order) => {
     let totalCount = 0;
@@ -90,14 +98,67 @@ const Userorder = observer(() => {
   };
 
   const handlePayment = ({ orderId }) => {
-    console.log({ orderId });
+    console.log('orderId', orderId, {...statuses, [orderId]: 'paid'})
     if ({ orderId }) {
-      const lol = changeOrderStatusOnPaid({ orderId });
-      console.log("lol", {lol})
+     changeOrderStatusOnPaid({ orderId }).then(data=> {setStatuses({...statuses, [orderId]: data.status})});
     }
-
-    setShowModal(false);
+    // setShowModal(false);
   };
+
+  const handlePayClick = () => {
+    const cardNumberValid = cardNumber.length === 16;
+    const cvsValid = cvs.length === 3;
+    const expiryDateValid = expiryDate.length === 5;
+
+    if (cardNumberValid && cvsValid && expiryDateValid) {
+      handlePayment({ orderId: selectedOrderId });
+      setShowModal(false);
+    } else {
+      setValidationErrors({
+        cardNumber: !cardNumberValid,
+        cvs: !cvsValid,
+        expiryDate: !expiryDateValid,
+      });
+      console.log('Please fill in all fields correctly.');
+      // Implement logic to display an error message or handle invalid inputs
+    }
+  };
+
+  const handleExpiryDateChange = (e) => {
+    const input = e.target.value;
+    const formattedInput = input
+      .replace(/\s/g, '')
+      .replace(/\D/g, '')
+      .slice(0, 4);
+  
+    let month = formattedInput.slice(0, 2);
+    let year = formattedInput.slice(2);
+  
+    // Ограничение ввода месяца в диапазоне от 01 до 12
+    if (month > 12) {
+      month = '12';
+    } else if (month !== '0' && month.charAt(0) === '0') {
+      month = month.charAt(1);
+    }
+  
+    // Форматирование введенной даты MM/YY
+    const formattedDate = month.padStart(2, '0') + (year.length > 0 ? '/' + year : '');
+  
+    setExpiryDate(formattedDate);
+  };
+
+  const handleCardNumberChange = (e) => {
+    const input = e.target.value;
+    const formattedInput = input.replace(/\s/g, '').replace(/\D/g, '').slice(0, 16);
+    setCardNumber(formattedInput);
+  };
+
+  const handleCvsChange = (e) => {
+    const input = e.target.value;
+    const formattedInput = input.replace(/\s/g, '').replace(/\D/g, '').slice(0, 3);
+    setCvs(formattedInput);
+  };
+
 
   return (
     <Container>
@@ -149,7 +210,7 @@ const Userorder = observer(() => {
                   </p>
                   <Button
                     variant="outline-primary"
-                    style={{ maxWidth: 285, minWidth: 240 }}
+                    style={{ maxWidth: 285, minWidth: 240, opacity: statuses[order.id] !== 'issued' ? 0.4 : 1,}}
                     onClick={() => {
                       if (statuses[order.id] !== "issued") {
                         return;
@@ -157,7 +218,7 @@ const Userorder = observer(() => {
                       createPay({ orderId: order.id });
                      
                     }}
-                    disabled={statuses[order.id] !== "issued"} 
+                    disabled={statuses[order.id] !== "issued"}
                   >
                     Pay
                   </Button>
@@ -219,45 +280,64 @@ const Userorder = observer(() => {
 
       {/* Payment Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Payment for Order #{selectedOrderId}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="cardNumber">
-              <Form.Label>Card Number</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter card number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="cvs">
-              <Form.Label>CVV</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter CVS"
-                value={cvs}
-                onChange={(e) => setCvs(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => {
-              handlePayment({ orderId: selectedOrderId });
-            }}
-          >
-            Pay
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <Modal.Header closeButton>
+        <Modal.Title>Payment for Order #{selectedOrderId}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group controlId="cardNumber">
+            <Form.Label>Card Number</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter card number"
+              value={cardNumber}
+              onChange={handleCardNumberChange}
+              maxLength={16}
+              style={{ borderColor: validationErrors.cardNumber ? 'red' : '' }}
+            />
+            {validationErrors.cardNumber && (
+              <Form.Text style={{ color: 'red' }}>Please enter a valid card number</Form.Text>
+            )}
+          </Form.Group>
+          <Form.Group controlId="expiryDate">
+            <Form.Label>Expiration Date</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="MM/YY"
+              value={expiryDate}
+              onChange={handleExpiryDateChange}
+              maxLength={5}
+              style={{ borderColor: validationErrors.expiryDate ? 'red' : '' }}
+            />
+            {validationErrors.expiryDate && (
+              <Form.Text style={{ color: 'red' }}>Please enter a valid expiration date</Form.Text>
+            )}
+          </Form.Group>
+          <Form.Group controlId="cvs">
+            <Form.Label>CVV</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter CVS"
+              value={cvs}
+              onChange={handleCvsChange}
+              maxLength={3}
+              style={{ borderColor: validationErrors.cvs ? 'red' : '' }}
+            />
+            {validationErrors.cvs && (
+              <Form.Text style={{ color: 'red' }}>Please enter a valid CVS</Form.Text>
+            )}
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handlePayClick}>
+          Pay
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </Container>
   );
 });
