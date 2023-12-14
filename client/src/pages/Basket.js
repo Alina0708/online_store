@@ -170,6 +170,9 @@ const Basket = observer(() => {
                       onClick={() => {
                         const bookId = basketUser.book.id;
                         deleteBook(basketId, bookId);
+                        getBasketBooksByUserId(userId).then((data) => {
+                          setBasketBooks(data.basketBooks);
+                        });
                       }}
                     >
                       Delete

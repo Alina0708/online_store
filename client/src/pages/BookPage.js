@@ -12,7 +12,7 @@ import {
   getBasketIdByUserId,
   createBasketBook,
   createRate,
-  getRateByUser
+  getRateByUser,
 } from "../http/AutorAPI";
 import { check } from "../http/UserAPI";
 import { Context } from "../index";
@@ -26,9 +26,10 @@ const BookPage = () => {
   const [basket, setBasket] = useState();
   const { id } = useParams();
   const [rating, setRating] = useState(0);
-const [rate, setRate] = useState();
+  const [rate, setRate] = useState();
+  const [isEmptyComment, setIsEmptyComment] = useState(false);
 
-const { isAuth } = useContext(Context);
+  const { isAuth } = useContext(Context);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,21 +37,23 @@ const { isAuth } = useContext(Context);
         const bookData = await getBookOneId(id);
         setBooks(bookData);
 
-        const genreDescription = await getGenreDescription({name:bookData.genre});
+        const genreDescription = await getGenreDescription({
+          name: bookData.genre,
+        });
         setDescriptionGenre(genreDescription);
 
-        if(isAuth.isAuth){
-        const userData = await check();
-        setUser(userData.id);
-        if(userId && id)
-        { 
-        getRateByUser({ userId, bookId: parseInt(id, 10) }).then(data => {setRate(data.rate);});
+        if (isAuth.isAuth) {
+          const userData = await check();
+          setUser(userData.id);
+          if (userId && id) {
+            getRateByUser({ userId, bookId: parseInt(id, 10) }).then((data) => {
+              setRate(data.rate);
+            });
+          }
         }
-      }
 
         const showComment = await getCommentsBook(id);
         setShowComment(showComment.comments);
-        
       } catch (error) {
         console.error(error);
       }
@@ -62,17 +65,19 @@ const { isAuth } = useContext(Context);
   const handleSendComment = async () => {
     try {
       if (userId && id && comment !== "") {
+        setIsEmptyComment(false);
         let data = await createComments({ comment, userId, bookId: id });
         console.log("Comment added successfully");
         if (data) {
           setCommnet("");
           //setShowComment([...showComments, {comment:comment, userId:userId, bookId: id}]);
         }
+      } else {
+        setIsEmptyComment(true);
       }
     } catch (error) {
       console.error(error);
-    }
-  };
+    }}
 
   const AddToBasket = async () => {
     if (userId) {
@@ -96,10 +101,9 @@ const { isAuth } = useContext(Context);
           onMouseEnter={() => setRating(i)}
           onMouseLeave={() => setRating(0)}
           style={{
-            cursor: 'pointer',
-            fontSize: '28px', 
-            color: (rate === 0 && i <= rating) || (i <= rate) ? 'gold' : 'gray'
-
+            cursor: "pointer",
+            fontSize: "28px",
+            color: (rate === 0 && i <= rating) || i <= rate ? "gold" : "gray",
           }}
         >
           &#9733;
@@ -111,8 +115,8 @@ const { isAuth } = useContext(Context);
 
   const handleStarClick = (star) => {
     setRating(star);
-    console.log({rate:star, userId, id})
-    createRate({rate:star, userId, bookId:id})
+    console.log({ rate: star, userId, id });
+    createRate({ rate: star, userId, bookId: id });
   };
 
   return (
@@ -125,15 +129,23 @@ const { isAuth } = useContext(Context);
             src={"http://localhost:5000/" + books.img}
           />
           <Row>
-            <div
-              style={{ height: 20 }}
-              className="d-flex mt-1"
-            >
-              <div style={{display:"flex"}}>
-              <p>{books.rating}</p>
-              <Image src={star} width={20} height={20} />
+            <div style={{ height: 20 }} className="d-flex mt-1">
+              <div style={{ display: "flex" }}>
+                <p>{books.rating}</p>
+                <Image src={star} width={20} height={20} />
               </div>
-             {isAuth.isAuth  && <div style={{display:"flex", alignItems:"center", marginLeft: 140}}> {renderStars()}</div>}
+              {isAuth.isAuth && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginLeft: 140,
+                  }}
+                >
+                  {" "}
+                  {renderStars()}
+                </div>
+              )}
             </div>
           </Row>
         </Col>
@@ -151,46 +163,56 @@ const { isAuth } = useContext(Context);
             <p>*{descriptionGenre}</p>
           </div>
         </Col>
-        {isAuth.isAuth  && 
-        <Col md={3}>
-          <div style={{ border: "1px solid black", padding: 20 }}>
-            <div className="d-flex">
-              <p>Price:</p>
-              <p>{" " + books.price + "BYN"}</p>
+        {isAuth.isAuth && (
+          <Col md={3}>
+            <div style={{ border: "1px solid black", padding: 20 }}>
+              <div className="d-flex">
+                <p>Price:</p>
+                <p>{" " + books.price + "BYN"}</p>
+              </div>
+              <div>
+                <Button variant="outline-primary" onClick={AddToBasket}>
+                  Add to Basket
+                </Button>
+              </div>
             </div>
-            <div>
-              <Button variant="outline-primary" onClick={AddToBasket}>
-                Add to Basket
-              </Button>
-            </div>
-          </div>
-        </Col>}
+          </Col>
+        )}
       </Row>
 
       <Row>
-      {isAuth.isAuth  && <h3 className="d-flex align-item-center mt-1">Comments</h3>}
-        {isAuth.isAuth  && 
-        <div>
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            value={comment}
-            onChange={(e) => setCommnet(e.target.value)}
-            style={{ height: 100 }}
-            className="d-block w-100"
-          />
-          <Button
-            onClick={handleSendComment}
-            style={{
-              position: "absolute",
-              right: 310,
-              marginTop: 10,
-              width: 200,
-            }}
-          >
-            Send
-          </Button>
-        </div>}
+        {isAuth.isAuth && (
+          <h3 className="d-flex align-item-center mt-1">Comments</h3>
+        )}
+        {isAuth.isAuth && (
+          <div>
+            <input
+              type="text"
+              placeholder="Add a comment..."
+              value={comment}
+              onChange={(e) => {
+                setCommnet(e.target.value);
+                setIsEmptyComment(e.target.value === "");
+              }}
+              style={{ height: 100, borderColor: isEmptyComment ? "red" : "" }} 
+              className="d-block w-100"
+            />
+            {isEmptyComment && (
+              <p style={{ color: "red" }}>Fill in the comment field</p>
+            )}{" "}
+            <Button
+              onClick={handleSendComment}
+              style={{
+                position: "absolute",
+                right: 310,
+                marginTop: 10,
+                width: 200,
+              }}
+            >
+              Send
+            </Button>
+          </div>
+        )}
 
         <div style={{ marginTop: 70 }}>
           {showComments &&

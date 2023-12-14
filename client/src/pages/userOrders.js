@@ -126,27 +126,42 @@ const Userorder = observer(() => {
 
   const handleExpiryDateChange = (e) => {
     const input = e.target.value;
-    const formattedInput = input
-      .replace(/\s/g, '')
-      .replace(/\D/g, '')
-      .slice(0, 4);
-  
+    let formattedInput = input.replace(/\D/g, ''); // Удаляем все нецифровые символы из введенной строки
+    
     let month = formattedInput.slice(0, 2);
     let year = formattedInput.slice(2);
-  
-    // Ограничение ввода месяца в диапазоне от 01 до 12
-    if (month > 12) {
-      month = '12';
-    } else if (month !== '0' && month.charAt(0) === '0') {
-      month = month.charAt(1);
-    }
-  
-    // Форматирование введенной даты MM/YY
-    const formattedDate = month.padStart(2, '0') + (year.length > 0 ? '/' + year : '');
-  
-    setExpiryDate(formattedDate);
-  };
 
+    // Определение текущего года
+    const currentYear = new Date().getFullYear().toString().slice(2);
+
+    // Проверка месяца: от 01 до 12
+    if (parseInt(month, 10) > 12 || parseInt(month, 10) < 1) {
+        console.error('Invalid month');
+        // Обведение поля красным
+        e.target.style.borderColor = 'red';
+        // Вывод предупреждения
+        alert('Месяц должен быть в промежутке от 01 до 12');
+        return;
+    } else {
+        e.target.style.borderColor = ''; // Сброс красной рамки, если месяц валидный
+    }
+    
+
+    if ((year.length === 2 && parseInt(year, 10) < currentYear) || (year.length === 2 && parseInt(year, 10) > parseInt(currentYear, 10) + 4)) {
+        console.error('Invalid year');
+        // Обведение поля красным
+        e.target.style.borderColor = 'red';
+        // Вывод предупреждения
+        alert(`Год должен быть в промежутке от ${currentYear} до ${parseInt(currentYear, 10) + 4}`);
+        return;
+    } else {
+        e.target.style.borderColor = ''; // Сброс красной рамки, если год валидный
+    }
+
+    formattedInput = `${month}/${year}`;
+    setExpiryDate(formattedInput);
+};
+  
   const handleCardNumberChange = (e) => {
     const input = e.target.value;
     const formattedInput = input.replace(/\s/g, '').replace(/\D/g, '').slice(0, 16);
