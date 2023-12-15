@@ -10,6 +10,7 @@ router.get('/:id', booksController.getBookOne)
 router.get('/autor/:autor', booksController.getOneAutor)
 router.put('/search/', booksController.findBooksByAuthorOrName)
 router.put('/update/:id', checkRole('admin'),booksController.update)
+router.put('/all/:genre', booksController.getBooksByGenre)
 router.delete('/:id', checkRole('admin'), booksController.deleteBookById)
 
 module.exports = router

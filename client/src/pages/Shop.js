@@ -6,7 +6,7 @@ import { Context } from "../index";
 import { observer } from "mobx-react-lite";
 import { getAutors, getBooks, getGenre } from "../http/AutorAPI";
 import Slider from "../components/Slider";
-import { findBooksByAuthorOrName } from "../http/AutorAPI";
+import { findBooksByAuthorOrName, getBookByGenre } from "../http/AutorAPI";
 import BookCard from "../components/BookCard";
 import "../CSS/pageShop.css"
 
@@ -16,12 +16,27 @@ const Shop = observer(() => {
   const [searchBook, setSearchBook] = useState([]);
   // const [popularBook, setPopularBook] = useState();
 
+  // useEffect(() => {
+  //   getBooks().then((data) => books.setBooks(data));
+
+  //   // getPopularBookInOrders().then((data) => setPopularBook(data))
+  // }, [books]);
+
   useEffect(() => {
-    getBooks().then((data) => books.setBooks(data));
-    getGenre().then((data) => books.setGenre(data));
-    getAutors().then((data) => books.setAutors(data));
-    // getPopularBookInOrders().then((data) => setPopularBook(data))
-  }, [books]);
+    if (books._selectedGenre.id) {
+      console.log(books._selectedGenre.id)
+      getBookByGenre(books._selectedGenre.id).then((data) => {
+        books.setBooks(data.books);
+      }).catch((error) => {
+        console.error("Failed to fetch books by genre:", error);
+      });
+    } else {
+      // Если жанр не выбран, получаем все книги
+      getBooks().then((data) => books.setBooks(data));
+      getGenre().then((data) => books.setGenre(data));
+      getAutors().then((data) => books.setAutors(data));
+    }
+  }, [books._selectedGenre.id]);
   
   const handleSearch = (searchQueryValue) => {
     console.log("lol", searchQueryValue)
@@ -44,7 +59,7 @@ const Shop = observer(() => {
       <Row style={{ display: "flex", justifyContent: "center" }}>
         <Col md={9}>
           <Row>
-            <GenreBar />
+          <GenreBar />
           </Row>
 
           <Row style={{ marginBottom: 10, marginTop: 10 }}>
@@ -65,7 +80,7 @@ const Shop = observer(() => {
             <Slider />
           </Row>
           
-          {(searchBook.length === 0 && searchQuery === "") && books.books?.length > 0 &&
+          {(searchBook.length === 0 && searchQuery === "" && !books._selectedGenre.id) && books.books?.length > 0 &&
           <Row className="carousel-row" style={{marginTop:10}}>
             <div className="carousel-wrapper">
               <h4>New books</h4>

@@ -302,7 +302,7 @@ class OrderController {
         attributes: ['bookId', [fn('COUNT', 'bookId'), 'count']],
         group: ['bookId'],
         order: [[literal('count'), 'DESC']],
-        limit: 5,
+        limit: 7,
       });
   
       const bookIds = popularBooks.map((book) => book.bookId);

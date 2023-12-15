@@ -71,6 +71,15 @@ export const getBookOneId = async (id) => {
   }
 };
 
+export const getBookByGenre = async (genre) => {
+  try {
+    const { data } = await $host.put(`api/books/all/${genre}`);
+    return data;
+  } catch (e) {
+    console.log("getBookByGenre - error");
+  }
+};
+
 export const createBook = async ({
   name,
   autorId,

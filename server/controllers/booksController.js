@@ -82,6 +82,27 @@ class BooksController {
     }
   }
 
+  async getBooksByGenre(req, res) {
+    try {
+      const genre = req.params.genre;
+
+      const books = await Books.findAll({
+        where: { genreId: genre },
+      });
+
+      if (!books || books.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "Книги этого genre не найдены" });
+      }
+
+      res.status(200).json({ books:books });
+    } catch (error) {
+      console.error("Ошибка при поиске книг по автору:", error);
+      res.status(500).json({ message: "Ошибка при поиске книг по genre" });
+    }
+  }
+
   async getBookOne(req, res) {
     try {
       const bookId = req.params.id;
