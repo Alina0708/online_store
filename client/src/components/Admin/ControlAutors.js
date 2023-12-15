@@ -11,10 +11,17 @@ const ControlAutors = observer(() => {
 
   useEffect(() => {
     getAutors().then((data) => setAutors(data));
+    updateAuthorsList();
   }, [autors?.length]);
 
+  const updateAuthorsList = () => {
+    getAutors().then((data) => {
+      setAutors(data);
+    });
+  };
+
   const handleShowTable = () => {
-    setShowTable(!showTable); 
+    setShowTable(!showTable);
   };
 
   const handleShowAutorModal = () => {
@@ -26,7 +33,9 @@ const ControlAutors = observer(() => {
   };
 
   const handleDelete = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this author?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this author?"
+    );
     if (confirmDelete) {
       deleteAutors({ id }).then((data) => {
         window.alert("delete");
@@ -37,17 +46,17 @@ const ControlAutors = observer(() => {
 
   return (
     <div>
-       <div style={{marginBottom:10}}>Autors</div>
+      <div style={{ marginBottom: 10 }}>Autors</div>
       <Button
-        style={{ width: 200, marginBottom: 10, marginTop:10 }}
-        onClick={handleShowTable} 
+        style={{ width: 200, marginBottom: 10, marginTop: 10 }}
+        onClick={handleShowTable}
         variant="outline-primary"
       >
         {showTable ? "Hide list autors" : "Show list autors"}
       </Button>
 
       <Button
-        style={{ width: 120, marginBottom: 10, marginLeft: 10,  marginTop:10  }}
+        style={{ width: 120, marginBottom: 10, marginLeft: 10, marginTop: 10 }}
         onClick={handleShowAutorModal}
       >
         Add autor
@@ -57,11 +66,15 @@ const ControlAutors = observer(() => {
           <table style={{ width: "100%", border: "1px solid #D3D3D3" }}>
             <thead>
               <tr>
-                <th style={{ border: "1px solid #D3D3D3", padding: "5px" }}>ID</th>
+                <th style={{ border: "1px solid #D3D3D3", padding: "5px" }}>
+                  ID
+                </th>
                 <th style={{ border: "1px solid #D3D3D3", padding: "5px" }}>
                   Name
                 </th>
-                <th style={{ border: "1px solid l#D3D3D3", padding: "5px" }}>Surname</th>
+                <th style={{ border: "1px solid l#D3D3D3", padding: "5px" }}>
+                  Surname
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +83,9 @@ const ControlAutors = observer(() => {
                   key={autor.id}
                   style={{ cursor: "pointer" }}
                   onDoubleClick={() => handleDelete(autor.id)}
-                  onMouseOver={(e) => (e.target.style.backgroundColor = "#e6f7ff")}
+                  onMouseOver={(e) =>
+                    (e.target.style.backgroundColor = "#e6f7ff")
+                  }
                   onMouseOut={(e) => (e.target.style.backgroundColor = "")}
                 >
                   <td style={{ border: "1px solid #D3D3D3", padding: "5px" }}>
@@ -86,7 +101,7 @@ const ControlAutors = observer(() => {
               ))}
             </tbody>
           </table>
-          <FormAutor show={showAutorModal} onHide={handleHideAutorModal} />
+          <FormAutor show={showAutorModal} onHide={handleHideAutorModal} updateAuthorsList={updateAuthorsList}/>
         </>
       )}
     </div>

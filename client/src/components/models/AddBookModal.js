@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { createBook, getGenre, getAutors } from "../../http/AutorAPI";
 
-const AddBookModal = ({ show, onHide }) => {
+const AddBookModal = ({ show, onHide, updateBooksList }) => {
   const [formData, setFormData] = useState({
     name: "",
     autorId: "",
@@ -56,6 +56,7 @@ const AddBookModal = ({ show, onHide }) => {
     }
 
     createBook(formData);
+    updateBooksList();
     setFormData({
       name: "",
       autorId: "",
@@ -65,6 +66,7 @@ const AddBookModal = ({ show, onHide }) => {
       img: null,
     });
     onHide();
+
   };
 
   return (

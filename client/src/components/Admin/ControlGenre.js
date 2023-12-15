@@ -11,7 +11,14 @@ const ControlGenre = observer(() => {
 
   useEffect(() => {
     getGenre().then((data) => setGenres(data));
+    updateGenresList();
   }, [genres?.length]);
+
+  const updateGenresList = () => {
+    getGenre().then((data) => {
+      setGenres(data);
+    });
+  };
 
   const toggleTable = () => {
     setShowTable(!showTable);
@@ -49,7 +56,7 @@ const ControlGenre = observer(() => {
       >
         Add genre
       </Button>
-      <AddGenreModal show={showAddGenreModal} onHide={toggleAddGenreModal} />
+      <AddGenreModal show={showAddGenreModal} onHide={toggleAddGenreModal} updateGenresList={updateGenresList}/>
       {showTable && (
         <Table striped bordered>
           <thead>

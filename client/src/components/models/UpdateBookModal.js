@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { updateBook, getGenre, getAutors } from "../../http/AutorAPI";
 
 const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
-  const [updatedBookData, setUpdatedBookData] = useState(bookData && bookData.name ? { ...bookData } : {});
+  const [updatedBookData, setUpdatedBookData] = useState(
+    bookData && bookData.name ? { ...bookData } : {}
+  );
   const [authors, setAuthors] = useState();
   const [genres, setGenres] = useState();
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setUpdatedBookData({ ...bookData });
- getAutors().then(data => setAuthors(data));
- getGenre().then(data => setGenres(data));
-    console.log("authors", authors)
-    console.log("genres", genres)
+    getAutors().then((data) => setAuthors(data));
+    getGenre().then((data) => setGenres(data));
   }, [bookData]);
 
   const handleInputChange = (e) => {
@@ -21,40 +22,95 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
       ...updatedBookData,
       [name]: value,
     });
+  
+    const updatedErrors = { ...errors };
+  
+    if (name === 'name' && value.trim() !== '') {
+      delete updatedErrors.name;
+    } else if (name === 'description' && value.trim() !== '') {
+      delete updatedErrors.description;
+    } else if (name === 'autorId' && value.trim() !== '') {
+      delete updatedErrors.autorId;
+    } else if (name === 'genreId' && value.trim() !== '') {
+      delete updatedErrors.genreId;
+    } else if (name === 'price' && (!isNaN(value) && parseFloat(value) >= 0)) {
+      delete updatedErrors.price;
+    }
+  
+    setErrors(updatedErrors);
   };
+
   const handleImageChange = (e) => {
-    setUpdatedBookData({
-        ...updatedBookData,
-        img: e.target.files[0].name,
-      });
-      console.log("image", e.target.files[0].name)
+    const file = e.target.files[0];
+    if (file) {
+      const extension = file.name.split(".").pop().toLowerCase();
+      if (extension !== "jpg" && extension !== "jpeg") {
+        setErrors({ ...errors, image: "Please select a JPG image" });
+      } else {
+        setUpdatedBookData({
+          ...updatedBookData,
+          img: file.name,
+        });
+        setErrors((prevErrors) => ({ ...prevErrors, image: "" }));
+      }
+    }
   };
 
   const handleUpdate = async () => {
     try {
-      const newBooks = await updateBook(updatedBookData);
-      console.log(updatedBookData);
-      if(newBooks){
-      setBooks((prevBooks) =>
-        prevBooks.map((book) =>
-          book.id === updatedBookData.id
-            ? {
-                ...book,
-                name: updatedBookData.name,
-                description: updatedBookData.description,
-                autorId: updatedBookData.autorId,
-                genreId: updatedBookData.genreId,
-                price: updatedBookData.price,
-                img: updatedBookData.img
-              }
-            : book
-        )
-      );
-      onHide();
-    } 
+      const validationErrors = validateForm(updatedBookData);
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+      } else {
+        const newBooks = await updateBook(updatedBookData);
+        if (newBooks) {
+          setBooks((prevBooks) =>
+            prevBooks.map((book) =>
+              book.id === updatedBookData.id
+                ? {
+                    ...book,
+                    name: updatedBookData.name,
+                    description: updatedBookData.description,
+                    autorId: updatedBookData.autorId,
+                    genreId: updatedBookData.genreId,
+                    price: updatedBookData.price,
+                    img: updatedBookData.img,
+                  }
+                : book
+            )
+          );
+          onHide();
+        }
+      }
     } catch (error) {
       console.error("Failed to update book", error);
     }
+  };
+
+  const validateForm = (data) => {
+    const errors = {};
+
+    if (!data.name) {
+      errors.name = "Please enter a name";
+    }
+
+    if (!data.description) {
+      errors.description = "Please enter a description";
+    }
+
+    if (!data.autorId) {
+      errors.autorId = "Please select an author";
+    }
+
+    if (!data.genreId) {
+      errors.genreId = "Please select a genre";
+    }
+
+    if (!data.price || data.price < 0) {
+      errors.price = "Price must be a non-negative number";
+    }
+
+    return errors;
   };
 
   return (
@@ -64,53 +120,67 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-            <Form.Group controlId="formId">
-              <Form.Label>Id</Form.Label>
-              <Form.Control
-                type="number"
-                name="id"
-                value={updatedBookData.id}
-                onChange={handleInputChange}
-                disabled
-              />
-            </Form.Group>
+          <Form.Group controlId="formId">
+            <Form.Label>Id</Form.Label>
+            <Form.Control
+              type="number"
+              name="id"
+              value={updatedBookData.id}
+              onChange={handleInputChange}
+              disabled
+            />
+          </Form.Group>
 
-            <Form.Group controlId="formName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={updatedBookData.name}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
+          <Form.Group controlId="formName">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              type="text"
+              name="name"
+              value={updatedBookData.name}
+              onChange={handleInputChange}
+              isInvalid={!!errors.name}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.name}
+            </Form.Control.Feedback>
+          </Form.Group>
 
-            <Form.Group controlId="formImage">
-              <Form.Label>Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="image"
-                onChange={handleImageChange}
-              />
-            </Form.Group>
+          <Form.Group controlId="formImage">
+            <Form.Label>Image</Form.Label>
+            <Form.Control
+              type="file"
+              name="image"
+              onChange={handleImageChange}
+              isInvalid={!!errors.image}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.image}
+            </Form.Control.Feedback>
+          </Form.Group>
 
-            <Form.Group controlId="formDescr">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                type="text"
-                name="description"
-                value={updatedBookData.description}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-           {authors &&
+          <Form.Group controlId="formDescr">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              name="description"
+              value={updatedBookData.description}
+              onChange={handleInputChange}
+              isInvalid={!!errors.description}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.description}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {authors && (
             <Form.Group controlId="formAutor">
-              <Form.Label>autorId</Form.Label>
+              <Form.Label>Author</Form.Label>
               <Form.Control
                 as="select"
                 name="autorId"
                 value={updatedBookData.autorId}
                 onChange={handleInputChange}
+                isInvalid={!!errors.autorId}
               >
                 <option value="">Select Author</option>
                 {authors.map((author) => (
@@ -119,16 +189,21 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
                   </option>
                 ))}
               </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.autorId}
+              </Form.Control.Feedback>
             </Form.Group>
-            }
-            {genres &&
+          )}
+
+          {genres && (
             <Form.Group controlId="formGenre">
-              <Form.Label>genreId</Form.Label>
+              <Form.Label>Genre</Form.Label>
               <Form.Control
                 as="select"
                 name="genreId"
                 value={updatedBookData.genreId}
                 onChange={handleInputChange}
+                isInvalid={!!errors.genreId}
               >
                 <option value="">Select Genre</option>
                 {genres.map((genre) => (
@@ -137,20 +212,25 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
                   </option>
                 ))}
               </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.genreId}
+              </Form.Control.Feedback>
             </Form.Group>
-            }
+          )}
 
-            <Form.Group controlId="formPrice">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="number"
-                name="price"
-                value={updatedBookData.price}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-
-          {/* Add other form fields similarly */}
+          <Form.Group controlId="formPrice">
+            <Form.Label>Price</Form.Label>
+            <Form.Control
+              type="number"
+              name="price"
+              value={updatedBookData.price}
+              onChange={handleInputChange}
+              isInvalid={!!errors.price}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.price}
+            </Form.Control.Feedback>
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>

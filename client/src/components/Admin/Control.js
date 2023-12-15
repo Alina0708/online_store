@@ -32,6 +32,19 @@ const Control = observer(() => {
     fetchBooks();
   }, [searchQuery, books?.length]);
 
+  const updateBooksList = () => {
+    const response = getBooksFind({ bookOrAuthor: searchQuery });
+        const booksData = response && response.books; 
+  
+        if (Array.isArray(booksData)) {
+          setBooks(booksData); 
+          console.log("update");
+        }
+        if(!searchQuery){
+          setBooks(response); 
+        }
+  };
+
   const handleAddBookClick = () => {
     setShowModal(true);
   };
@@ -90,7 +103,7 @@ const Control = observer(() => {
         Add book
       </Button>
 
-      <AddBookModal show={showModal} onHide={() => setShowModal(false)} />
+      <AddBookModal show={showModal} onHide={() => setShowModal(false)} updateBooksList={updateBooksList} />
       <table className="custom-table">
         <thead>
           <tr>

@@ -133,29 +133,23 @@ const Userorder = observer(() => {
 
     // Определение текущего года
     const currentYear = new Date().getFullYear().toString().slice(2);
-
-    // Проверка месяца: от 01 до 12
     if (parseInt(month, 10) > 12 || parseInt(month, 10) < 1) {
         console.error('Invalid month');
-        // Обведение поля красным
         e.target.style.borderColor = 'red';
-        // Вывод предупреждения
         alert('Месяц должен быть в промежутке от 01 до 12');
         return;
     } else {
-        e.target.style.borderColor = ''; // Сброс красной рамки, если месяц валидный
+        e.target.style.borderColor = ''; 
     }
     
 
     if ((year.length === 2 && parseInt(year, 10) < currentYear) || (year.length === 2 && parseInt(year, 10) > parseInt(currentYear, 10) + 4)) {
         console.error('Invalid year');
-        // Обведение поля красным
         e.target.style.borderColor = 'red';
-        // Вывод предупреждения
         alert(`Год должен быть в промежутке от ${currentYear} до ${parseInt(currentYear, 10) + 4}`);
         return;
     } else {
-        e.target.style.borderColor = ''; // Сброс красной рамки, если год валидный
+        e.target.style.borderColor = '';
     }
 
     formattedInput = `${month}/${year}`;
