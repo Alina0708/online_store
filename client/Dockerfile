@@ -21,6 +21,7 @@ FROM nginx:stable-alpine
 
 # Копируем собранные файлы React приложения из build-директории в nginx
 COPY --from=build /app/build /usr/share/nginx/html
+COPY ./default.conf /etc/nginx/conf.d/default.conf
 
 # Экспонируем порт 80 для внешнего доступа
 EXPOSE 80

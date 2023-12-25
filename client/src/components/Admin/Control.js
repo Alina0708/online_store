@@ -6,10 +6,12 @@ import "../../CSS/ControlBookTable.css";
 import AddBookModal from "../models/AddBookModal";
 import UpdateBookModal from "../models/UpdateBookModal";
 
-const Control = observer(() => {
+const Control = observer(({genres, authors}) => {
   const [books, setBooks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  console.log('genres', genres)
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -103,7 +105,7 @@ const Control = observer(() => {
         Add book
       </Button>
 
-      <AddBookModal show={showModal} onHide={() => setShowModal(false)} updateBooksList={updateBooksList} />
+      <AddBookModal show={showModal} onHide={() => setShowModal(false)} updateBooksList={updateBooksList} genres={genres} authors={authors} />
       <table className="custom-table">
         <thead>
           <tr>
@@ -154,6 +156,9 @@ const Control = observer(() => {
         onHide={() => setShowUpdateModal(false)}
         bookData={selectedBook}
         setBooks={setBooks}
+        updateBooksList={updateBooksList}
+        genres={genres}
+        authors={authors}
       />
     </Container>
   );

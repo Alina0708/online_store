@@ -4,13 +4,11 @@ import { observer } from "mobx-react-lite";
 import { getGenre, deleteGenre } from "../../http/AutorAPI";
 import AddGenreModal from "../models/AddGenreModal";
 
-const ControlGenre = observer(() => {
-  const [genres, setGenres] = useState([]);
+const ControlGenre = observer(({genres, setGenres}) => {
   const [showTable, setShowTable] = useState(false);
   const [showAddGenreModal, setShowAddGenreModal] = useState(false);
 
   useEffect(() => {
-    getGenre().then((data) => setGenres(data));
     updateGenresList();
   }, [genres?.length]);
 
@@ -56,7 +54,7 @@ const ControlGenre = observer(() => {
       >
         Add genre
       </Button>
-      <AddGenreModal show={showAddGenreModal} onHide={toggleAddGenreModal} updateGenresList={updateGenresList}/>
+      <AddGenreModal show={showAddGenreModal} onHide={toggleAddGenreModal} updateGenresList={updateGenresList} setGenres={setGenres}/>
       {showTable && (
         <Table striped bordered>
           <thead>

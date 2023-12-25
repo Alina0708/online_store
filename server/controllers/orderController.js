@@ -14,6 +14,8 @@ class OrderController {
   async createOrder(req, res) {
     try {
       const { userId, commonPrice } = req.body;
+      if(!commonPrice){res.status(400).json("!commonPrice");}
+      if(!userId){res.status(400).json("!userId");}
       const order = await Order.create({ commonPrice, userId, statusId: 1 });
       res.status(201).json(order.id);
     } catch (error) {
@@ -291,7 +293,7 @@ class OrderController {
     return res.status(200).json(Object.values(ordersGroupedByUser));
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Failed to fetch orders grouped by users' });
+    return res.status(500).json({ error: error });
   }
 
   };

@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { createGenre, getGenre } from "../../http/AutorAPI";
 
-const AddGenreModal = ({ show, onHide, updateGenresList }) => {
+const AddGenreModal = ({ show, onHide, updateGenresList, setGenres }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [genre, setGenres] = useState();
 
   const handleNameChange = (e) => {
     setName(e.target.value);

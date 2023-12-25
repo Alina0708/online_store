@@ -75,18 +75,20 @@ const Basket = observer(() => {
       setBasketBooks(data.basketBooks);
     });
   };
-
+   console.log("baskketbooks", BasketBooks);
+   console.log("userId", userId);
   const createOrders = ({ userId, commonPrice }) => {
     const successMessage = document.getElementById("successMessage");
     if (successMessage) {
       successMessage.style.display = "block";
     }
-    if ((userId, commonPrice)) {
+    if (userId && commonPrice) {
+      console.log("create order",userId, commonPrice)
       createOrder({
         userId: userId,
         commonPrice: commonPrice.totalPrice,
       }).then((order) => {
-        if ({ BasketBooks }) {
+        if (BasketBooks) {
           BasketBooks.forEach((basketUser) => {
             console.log(order, basketUser.book.id, basketUser.count);
             createOrderBook({
@@ -103,6 +105,7 @@ const Basket = observer(() => {
 
     getBasketBooksByUserId(userId).then((data) => {
       setBasketBooks(data.basketBooks);
+      console.log("пустая корзина")
     });
   };
 
@@ -117,7 +120,7 @@ const Basket = observer(() => {
     <Container>
       <Row>
         <Col>
-          {BasketBooks &&
+          {BasketBooks && BasketBooks.length !== 0 &&
             BasketBooks.map((basketUser) => {
               return (
                 <Row key={basketUser.id} style={{ paddingTop: 20 }}>

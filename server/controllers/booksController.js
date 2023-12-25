@@ -218,11 +218,16 @@ class BooksController {
       return res.status(404).json({ message: "Book not found" });
     }
 
-    if (req.files && req.files.img) {
+    console.log("image", req.files, req.files)
+    if (req.files && req.files) {
+     
       const { img } = req.files;
       let fileName = uuid.v4() + ".jpg";
       img.mv(path.resolve(__dirname, "..", "static", fileName));
       book.img = fileName; // Обновляем изображение книги
+    
+    }else{
+      res.status(500).json("not open file");
     }
 
     // Обновляем остальные данные книги
@@ -237,7 +242,7 @@ class BooksController {
     res.status(200).json(book);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error });
   }
 }
 }

@@ -10,7 +10,6 @@ import { Container, Row, Col } from "react-bootstrap";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import Chart from "chart.js/auto";
 import "../CSS/CircularProgressWithText.css";
-import "chartjs-plugin-datalabels";
 
 const Statistics = observer(() => {
   const [books, setBooks] = useState([]);

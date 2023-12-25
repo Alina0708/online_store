@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
-import { updateBook, getGenre, getAutors } from "../../http/AutorAPI";
+import { updateBook, getAutors } from "../../http/AutorAPI";
 
-const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
+const UpdateBookModal = ({ show, onHide, bookData, setBooks, updateBooksList, genres, authors }) => {
   const [updatedBookData, setUpdatedBookData] = useState(
     bookData && bookData.name ? { ...bookData } : {}
   );
-  const [authors, setAuthors] = useState();
-  const [genres, setGenres] = useState();
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setUpdatedBookData({ ...bookData });
-    getAutors().then((data) => setAuthors(data));
-    getGenre().then((data) => setGenres(data));
   }, [bookData]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,12 +41,12 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
     const file = e.target.files[0];
     if (file) {
       const extension = file.name.split(".").pop().toLowerCase();
-      if (extension !== "jpg" && extension !== "jpeg") {
+      if (extension !== "jpg") {
         setErrors({ ...errors, image: "Please select a JPG image" });
       } else {
         setUpdatedBookData({
           ...updatedBookData,
-          img: file.name,
+          img: file
         });
         setErrors((prevErrors) => ({ ...prevErrors, image: "" }));
       }
@@ -63,6 +60,7 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
         setErrors(validationErrors);
       } else {
         const newBooks = await updateBook(updatedBookData);
+        console.log(newBooks);
         if (newBooks) {
           setBooks((prevBooks) =>
             prevBooks.map((book) =>
@@ -80,6 +78,7 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
             )
           );
           onHide();
+          updateBooksList();
         }
       }
     } catch (error) {
@@ -185,7 +184,7 @@ const UpdateBookModal = ({ show, onHide, bookData, setBooks }) => {
                 <option value="">Select Author</option>
                 {authors.map((author) => (
                   <option key={author.id} value={author.id}>
-                    {author.id}
+                    {author.first_name + ' ' + author.last_name}
                   </option>
                 ))}
               </Form.Control>

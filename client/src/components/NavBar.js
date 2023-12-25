@@ -7,6 +7,7 @@ import basketImg from "../image/basketImg.com.png";
 import exitImage from "../image/320140.png";
 import { useLocation } from "react-router-dom";
 import { authorization } from "../http/UserAPI";
+import { Link } from "react-router-dom";
 import '../CSS/navMenu.css'
 
 
@@ -23,25 +24,25 @@ const NavBar = observer(() => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Container>
-        <a className="navbar-brand" href="/shop">
+        <Link className="navbar-brand" to="/shop">
           BookShop
-        </a>
+        </Link>
         {isAuth.isAuth ? (
           <ul className="navbar-nav">
             <li className={`nav-item ${location.pathname === "/shop" ? 'active' : ''}`}>
-              <a className="nav-link" href="/shop">
+              <Link className="nav-link" to="/shop">
                 Home
-              </a>
+              </Link>
             </li>
             <li className={`nav-item ${location.pathname === "/userorders" ? 'active' : ''}`} >
-              <a className="nav-link" href="/userorders">
+              <Link className="nav-link" to="/userorders">
                 Orders
-              </a>
+              </Link>
             </li>
             <li className={`nav-item ${location.pathname === "/messageForAdmin" ? 'active' : ''}`} >
-              <a className="nav-link" href="/messageForAdmin">
+              <Link className="nav-link" to="/messageForAdmin">
                 Contacts
-              </a>
+              </Link>
             </li>
           </ul>
         ) : (
@@ -49,13 +50,13 @@ const NavBar = observer(() => {
         )}
         {isAuth.isAuth ? (
           <div>
-            <a href="/basket">
+            <Link to="/basket">
               <img
                 style={{ height: 40, marginRight: 20 }}
                 src={basketImg}
                 alt="basket"
               />
-            </a>
+            </Link>
             <img
                 style={{ height: 30, marginRight: 20 }}
                 src={exitImage}

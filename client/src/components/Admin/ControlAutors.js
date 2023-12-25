@@ -4,19 +4,17 @@ import { getAutors, deleteAutors } from "../../http/AutorAPI";
 import { Button } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 
-const ControlAutors = observer(() => {
+const ControlAutors = observer(({authors, setAuthors}) => {
   const [showTable, setShowTable] = useState(false);
   const [showAutorModal, setShowAutorModal] = useState(false);
-  const [autors, setAutors] = useState([]);
 
   useEffect(() => {
-    getAutors().then((data) => setAutors(data));
     updateAuthorsList();
-  }, [autors?.length]);
+  }, [authors?.length]);
 
   const updateAuthorsList = () => {
     getAutors().then((data) => {
-      setAutors(data);
+      setAuthors(data);
     });
   };
 
@@ -39,7 +37,7 @@ const ControlAutors = observer(() => {
     if (confirmDelete) {
       deleteAutors({ id }).then((data) => {
         window.alert("delete");
-        getAutors().then((data) => setAutors(data));
+        getAutors().then((data) => setAuthors(data));
       });
     }
   };
@@ -78,7 +76,7 @@ const ControlAutors = observer(() => {
               </tr>
             </thead>
             <tbody>
-              {autors.map((autor) => (
+              {authors.map((autor) => (
                 <tr
                   key={autor.id}
                   style={{ cursor: "pointer" }}

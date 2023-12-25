@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { createBook, getGenre, getAutors } from "../../http/AutorAPI";
+import { createBook } from "../../http/AutorAPI";
 
-const AddBookModal = ({ show, onHide, updateBooksList }) => {
+const AddBookModal = ({ show, onHide, updateBooksList, genres, authors }) => {
   const [formData, setFormData] = useState({
     name: "",
     autorId: "",
@@ -11,13 +11,6 @@ const AddBookModal = ({ show, onHide, updateBooksList }) => {
     genreId: "",
     img: null,
   });
-  const [autors, setAutors] = useState([]);
-  const [genres, setGenres] = useState([]);
-
-  useEffect(() => {
-    getAutors().then((data) => setAutors(data));
-    getGenre().then((data) => setGenres(data));
-  }, [autors?.length, genres?.length]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,7 +49,6 @@ const AddBookModal = ({ show, onHide, updateBooksList }) => {
     }
 
     createBook(formData);
-    updateBooksList();
     setFormData({
       name: "",
       autorId: "",
@@ -66,7 +58,7 @@ const AddBookModal = ({ show, onHide, updateBooksList }) => {
       img: null,
     });
     onHide();
-
+    updateBooksList();
   };
 
   return (
@@ -95,9 +87,9 @@ const AddBookModal = ({ show, onHide, updateBooksList }) => {
               onChange={handleChange}
             >
               <option value="">Select author</option>
-              {autors.map((autor) => (
+              {authors.map((autor) => (
                 <option key={autor.id} value={autor.id}>
-                  {autor.id}
+                  {autor.first_name + ' ' + autor.last_name}
                 </option>
               ))}
             </Form.Control>
@@ -135,7 +127,7 @@ const AddBookModal = ({ show, onHide, updateBooksList }) => {
               <option value="">Select genre</option>
               {genres.map((genre) => (
                 <option key={genre.id} value={genre.id}>
-                  {genre.id}
+                  {genre.name}
                 </option>
               ))}
             </Form.Control>

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Context } from "../index";
 import { observer } from "mobx-react-lite";
 import Container from "react-bootstrap/Container";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import basketImg from "../image/basketImg.com.png";
 import exitImage from "../image/profile.png";
 import { useLocation } from "react-router-dom";
@@ -26,9 +26,9 @@ const NavMenu = observer(() => {
         {isAuth.isAuth ? (
           <ul className="navbar-nav">
             <li className={`nav-item ${location.pathname === "/shop" ? 'active' : ''}`}>
-              <a className="nav-link" href="/shop">
+              <Link className="nav-link" to="/shop">
                 Home
-              </a>
+              </Link>
             </li>
           </ul>
         ) : (
